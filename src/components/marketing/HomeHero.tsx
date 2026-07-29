@@ -4,7 +4,6 @@ import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import {
   ArrowRight,
-  BadgeCheck,
   Mic2,
   Presentation,
   Trophy,
@@ -17,7 +16,6 @@ import {
   FloatingBadges,
   Spotlight,
 } from "@/components/marketing/AestheticExtras";
-import { BrandMark } from "@/components/marketing/BrandMark";
 import { OrbitRings, StageFrame } from "@/components/marketing/DomainDecor";
 import { duration, easeWater, springSoft } from "@/lib/motion";
 import { site } from "@/content/site";
@@ -39,53 +37,7 @@ export function HomeHero() {
       />
 
       <div className="container-page relative z-[1]">
-        <motion.div
-          initial={reduced ? false : { opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: duration.medium, ease: easeWater }}
-          className="mb-7 flex justify-center sm:mb-9"
-        >
-          <Link
-            href="/impact"
-            className="group inline-flex max-w-full items-center gap-2 rounded-full border border-[#d5e0f0] bg-white/90 px-3 py-1.5 text-xs font-medium text-navy-900 shadow-sm backdrop-blur transition hover:border-brand-orange/30 hover:shadow-[var(--shadow-soft)] glow-navy"
-          >
-            <span className="relative flex size-1.5">
-              <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-60" />
-              <span className="relative size-1.5 rounded-full bg-emerald-500" />
-            </span>
-            <span className="shrink-0 rounded-full bg-navy-900 px-2 py-0.5 text-[10px] font-bold tracking-wide text-white uppercase">
-              National movement
-            </span>
-            <span className="truncate text-zinc-600">
-              100 partner campuses · investor-attended Grand Pitch · Startup
-              India aligned
-            </span>
-            <ArrowRight className="size-3.5 shrink-0 text-brand-orange transition group-hover:translate-x-0.5" />
-          </Link>
-        </motion.div>
-
         <div className="mx-auto max-w-4xl text-center">
-          <motion.div
-            initial={reduced ? false : { opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{
-              duration: duration.medium,
-              delay: 0.04,
-              ease: easeWater,
-            }}
-            className="mb-5 flex flex-wrap items-center justify-center gap-2 sm:gap-3"
-          >
-            <BrandMark size="sm" />
-            <span className="font-heading text-sm font-bold tracking-tight text-navy-900">
-              {site.name}
-            </span>
-            <span className="hidden h-4 w-px bg-[#d5e0f0] sm:block" />
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-orange-50 px-2.5 py-1 text-[11px] font-semibold text-brand-orange">
-              <BadgeCheck className="size-3.5" />
-              {site.backing}
-            </span>
-          </motion.div>
-
           <motion.h1
             initial={reduced ? false : { opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
