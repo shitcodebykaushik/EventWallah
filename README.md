@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Launch Bharat — Frontend MVP
 
-## Getting Started
+Industry-grade public marketing site and college partnership funnel for **Launch Bharat**, powered by **The Event Wallah**.
 
-First, run the development server:
+Built from the college partnership proposal (`Launch Bharat.pptx.pdf` in the repo root).
+
+## Stack
+
+- Next.js (App Router) + TypeScript
+- Tailwind CSS v4 + shadcn/ui
+- react-hook-form + zod (partnership form, client-only)
+- lucide-react icons
+
+## Getting started
 
 ```bash
+cd web
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm run build   # production build
+npm run start   # serve production build
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Routes
 
-## Learn More
+| Path | Purpose |
+|------|---------|
+| `/` | Home narrative + conversion |
+| `/about` | Vision, mission, 2030 roadmap |
+| `/program` | 5 phases, 2-day agenda, founder journey |
+| `/for-colleges` | Rankings, ROI, logistics, comparison |
+| `/for-students` | Student benefits + journey |
+| `/impact` | Year-1 targets, KPIs, media, operator stats |
+| `/partners` | Portfolio + illustrative testimonials |
+| `/partner` | 60-day timeline + partnership form |
+| `/contact` | Dual contact cards + form |
+| `/privacy`, `/terms` | Legal placeholders |
 
-To learn more about Next.js, take a look at the following resources:
+## Content
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Copy and stats live in `src/content/*` so marketing can edit without hunting JSX.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Forms
 
-## Deploy on Vercel
+`PartnershipForm` validates with Zod and simulates submit (success UI). Payload type: `PartnershipLead` in `src/lib/validations/partnership.ts` — ready for a future `POST /api/leads`.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Out of scope (MVP)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Auth, student registration, college admin, investor portal, CMS, real email/CRM.
+
+## Brand
+
+Navy `#0b1b3a` · Orange `#f97316` · Plus Jakarta Sans (headings) + Geist (body).
