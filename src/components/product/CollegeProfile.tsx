@@ -1,0 +1,15 @@
+"use client";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { ArrowLeft, Building2, ExternalLink, MapPin } from "lucide-react";
+import { EventCard } from "@/components/product/EventCard";
+import { demoColleges, demoEvents } from "@/content/demo";
+import { apiFetch, type College, type Event } from "@/lib/api";
+
+export function CollegeProfile({slug}:{slug:string}){
+ const initialCollege=demoColleges.find((item)=>item.slug===slug); const [college,setCollege]=useState<College|undefined>(initialCollege); const [events,setEvents]=useState<Event[]>(demoEvents.filter((item)=>item.collegeSlug===slug)); const [missing,setMissing]=useState(false);
+ useEffect(()=>{Promise.all([apiFetch<College>(`/api/v1/colleges/${slug}`),apiFetch<{items:Event[]}>(`/api/v1/colleges/${slug}/events`)]).then(([c,e])=>{setCollege(c);setEvents(e.items)}).catch(()=>{if(!initialCollege)setMissing(true)});},[initialCollege,slug]);
+ if(missing)return <div className="container-page py-24"><h1 className="text-3xl font-bold">Institution not found</h1><Link href="/colleges" className="btn-primary mt-6">Back to colleges</Link></div>;
+ if(!college)return <div className="container-page py-24">Loading institution…</div>;
+ return <><section className="relative overflow-hidden bg-navy-950 py-16 text-white sm:py-24"><div className="absolute inset-0 bg-grid-fade"/><div className="container-page relative"><Link href="/colleges" className="inline-flex items-center gap-2 text-xs font-bold text-white/45 hover:text-white"><ArrowLeft className="size-4"/>All institutions</Link><div className="mt-10 flex flex-col gap-7 sm:flex-row sm:items-end"><span className="flex size-20 items-center justify-center rounded-md border border-white/10 bg-white/8 text-xl font-extrabold">{college.shortName.slice(0,5)||<Building2/>}</span><div className="flex-1"><span className="text-xs font-bold tracking-wider text-brand-orange uppercase">{college.ownership} {college.institutionType}</span><h1 className="mt-3 max-w-4xl font-heading text-3xl font-extrabold leading-tight text-white sm:text-5xl">{college.name}</h1><p className="mt-4 flex items-center gap-2 text-sm text-white/50"><MapPin className="size-4"/>{college.city}, {college.state}</p></div>{college.website&&<a href={college.website} target="_blank" rel="noreferrer" className="btn-secondary-dark">Official website <ExternalLink className="size-4"/></a>}</div></div></section><section className="bg-[#f7f4ed] py-16"><div className="container-page"><div className="flex items-end justify-between"><div><p className="eyebrow">Campus calendar</p><h2 className="mt-4 section-title">Upcoming events</h2></div><span className="text-sm font-bold text-zinc-400">{events.length} listed</span></div>{events.length?<div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">{events.map((event)=><EventCard key={event.id} event={event}/>)}</div>:<div className="mt-8 rounded-md border border-dashed border-navy-900/15 py-20 text-center text-sm text-zinc-500">No upcoming events have been published yet.</div>}</div></section></>;
+}

@@ -4,93 +4,93 @@ export const phases = [
     title: "College onboarding",
     timing: "Week 0–2",
     description:
-      "Sign the MoU, stand up a Launch Bharat Cell, align with your IIC and academic calendar.",
+      "Confirm the program calendar, sign the MoU, and nominate the faculty and student leads.",
   },
   {
     id: "02",
     title: "Campus activation",
     timing: "Week 3–5",
     description:
-      "Train ambassadors, run workshops, drop problem briefs, form teams — momentum before the lights go up.",
+      "Train student ambassadors, publish the challenge briefs, run orientation sessions, and open team registration.",
   },
   {
     id: "03",
     title: "2-day flagship",
     timing: "Week 6",
     description:
-      "Innovation Challenge, Startup Summit, and Investor Grand Pitch — produced end-to-end on your campus.",
+      "Run the Innovation Challenge, founder sessions, startup showcase, and final pitch on campus.",
   },
   {
     id: "04",
     title: "Incubation & capital",
     timing: "Week 7–12",
     description:
-      "Shortlisted teams get warm intros to incubators, angels, and Startup India grant pathways.",
+      "Review shortlisted teams and connect suitable ventures with incubators, mentors, investors, and grant programs.",
   },
   {
     id: "05",
     title: "National alumni loop",
     timing: "Ongoing",
     description:
-      "Cross-campus founder network for hiring, customers, co-founders, and ongoing deal flow.",
+      "Keep participating teams connected through peer sessions, referrals, and future program opportunities.",
   },
 ];
 
 export const missionLevers = [
   {
     id: "M01",
-    title: "Mentorship at scale",
+    title: "Experienced mentors",
     description:
-      "A rotating pool of 200+ founders, operators, and investors — office hours, panels, and 1:1 pitch reviews for every campus.",
+      "Founders, operators, and investors support workshops, office hours, and focused reviews for selected teams.",
   },
   {
     id: "M02",
     title: "Capital pathways",
     description:
-      "Pipelines to angels, seed funds, and government grants — with warm intros for every shortlisted team on stage.",
+      "Suitable teams are introduced to relevant angels, seed funds, incubators, and government grant programs.",
   },
   {
     id: "M03",
-    title: "The stage",
+    title: "A structured pitch process",
     description:
-      "An investor-attended pitch arena on every partner campus — winners earn national exposure, not just a certificate.",
+      "A consistent evaluation and pitch format helps students prepare well and gives reviewers comparable information.",
   },
   {
     id: "M04",
     title: "A shared network",
     description:
-      "Alumni across 100+ campuses for co-founders, hires, customers, and peer learning no single college can build alone.",
+      "A cross-campus community creates room for peer learning, introductions, hiring, and future collaboration.",
   },
 ];
 
 export const tailwinds = [
   {
     id: "01",
-    title: "Startup India is ready for campuses",
+    title: "Campus innovation has clearer policy support",
     category: "Policy",
     description:
-      "Fund of Funds, tax holidays, and DPIIT recognition are single-window. Colleges can plug students into formal pathways faster than ever.",
+      "Institutions can connect entrepreneurship activity with IIC programs, incubation networks, and recognised startup-support pathways.",
   },
   {
     id: "02",
-    title: "Investors need non-metro deal flow",
+    title: "Investors are looking beyond established hubs",
     category: "Capital",
     description:
-      "Billions in dry powder are hunting for founders outside Tier-1 metros — campuses are the highest-density discovery surface.",
+      "A consistent screening process can make it easier for early-stage investors to review teams from more cities and institutions.",
   },
   {
     id: "03",
-    title: "Founders are younger than ever",
+    title: "Students are building earlier",
     category: "Talent",
     description:
-      "Median founder age is dropping; first-time builders outnumber serial founders. The classroom is the new pipeline.",
+      "Students increasingly test products, freelance, join startups, and explore entrepreneurship before graduation.",
   },
   {
     id: "04",
-    title: "Founder is a career track",
+    title: "Entrepreneurship complements placements",
     category: "Culture",
     description:
-      "Students no longer wait only for placements — they want a stage. Colleges that supply it own the narrative.",
+      "A credible founder pathway gives students another way to apply their skills while strengthening industry and alumni engagement.",
     highlight: true,
   },
 ];
@@ -103,80 +103,80 @@ export const visionRoadmap: {
   highlight?: boolean;
 }[] = [
   {
-    year: "2025",
-    label: "Foundation year",
+    year: "2026",
+    label: "Partner cohort",
     detail:
-      "100+ anchor colleges live. 5,000 students activated. Backed by Startup India.",
+      "Launch the 2026–27 cohort with a focused group of partner institutions and a common delivery model.",
   },
   {
     year: "2027",
-    label: "Expansion year",
+    label: "Network year",
     detail:
-      "500+ colleges. Tier-2 & Tier-3 focus. First Launch Bharat Fund of Funds — ₹250 Cr target.",
+      "Use the first cohort's operating data to improve the program and expand into more regions and disciplines.",
   },
   {
     year: "2029",
-    label: "Global year",
+    label: "Ecosystem year",
     detail:
-      "Cross-border expansion into Southeast Asia and Africa. Indian student founders on the world stage.",
+      "Build stronger links between campuses, incubators, industry partners, and early-stage capital.",
   },
   {
     year: "2030",
-    label: "Movement year",
+    label: "Long-term network",
     detail:
-      "1,000 colleges. 1M students. 10,000 startups. Ambition: unicorns traced back to a Launch Bharat pitch.",
+      "Establish a durable national network that helps campus ventures progress beyond their first competition.",
     highlight: true,
   },
 ];
 
 export const collegeFootprint = [
-  { value: "100+", label: "Colleges by 2025" },
-  { value: "500+", label: "Colleges by 2027" },
-  { value: "1,000+", label: "Colleges by 2030" },
+  { value: "25", label: "Pilot institutions · 2026" },
+  { value: "100", label: "Partner goal · 2026–27" },
+  { value: "500", label: "Long-term network goal" },
 ];
 
 export const partnershipTimeline = [
   {
     when: "Day 0",
     label: "Discovery",
-    title: "Introductory call · alignment",
+    title: "Initial program review",
     detail:
-      "30-minute call with the Dean / VC / IIC head. Agenda: strategic fit, calendar, faculty champion.",
+      "A 30-minute discussion with the institutional lead covering fit, timing, facilities, and the campus team.",
   },
   {
     when: "Week 1",
     label: "MoU signed",
-    title: "MoU · Launch Bharat Cell activated",
+    title: "Agreement and campus team",
     detail:
-      "MoU signed, campus-side team named, shared workspace and event date locked.",
+      "Confirm the scope, nominate the faculty and student leads, and agree on the program date and working plan.",
   },
   {
     when: "Week 2–3",
     label: "Ambassador training",
-    title: "20+ student ambassadors trained · campaign live",
+    title: "Ambassador orientation and campus communication",
     detail:
-      "Marketing collateral shipped, social calendar activated, campus posters up.",
+      "Brief the student ambassadors, prepare institutional communication, and publish the registration schedule.",
   },
   {
     when: "Week 4–5",
     label: "Team registrations",
-    title: "Problem statement drop · investor & jury locked",
+    title: "Team registration and reviewer confirmation",
     detail:
-      "Sealed briefs prepared, judge invitations confirmed, PR embargo agreed.",
+      "Open team registration, finalise the challenge briefs, confirm mentors and reviewers, and share evaluation criteria.",
   },
   {
     when: "Week 6",
     label: "Live event",
-    title: "The 2-day Launch Bharat flagship — live on campus",
+    title: "Two-day campus program",
     detail:
-      "Innovation Challenge · Startup Summit · Grand Pitch · Investor day.",
+      "Innovation Challenge, founder sessions, finalist pitches, startup showcase, and scheduled introductions.",
     highlight: true,
   },
   {
     when: "Week 7+",
     label: "Follow-through",
-    title: "Incubation routing · impact report · alumni loop",
+    title: "Team referrals and program report",
     detail:
-      "Top teams matched to accelerators, PR dossier delivered, joint press release published.",
+      "Review selected teams, arrange relevant referrals, and deliver the agreed participation, outcome, and media records.",
   },
 ];

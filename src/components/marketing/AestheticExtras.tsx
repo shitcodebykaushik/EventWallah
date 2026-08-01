@@ -57,19 +57,17 @@ export function BrandMarquee({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "relative overflow-hidden border-y border-[#dde5f0] bg-white/80 py-3.5 backdrop-blur-sm",
+        "relative overflow-hidden border-b border-navy-900/15 bg-navy-950 py-4 text-white",
         className
       )}
     >
-      <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-linear-to-r from-white to-transparent sm:w-24" />
-      <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-linear-to-l from-white to-transparent sm:w-24" />
       <div className="marquee-track gap-8 px-4">
         {row.map((item, i) => (
           <span
             key={`${item.label}-${i}`}
-            className="inline-flex items-center gap-2 text-sm font-semibold text-navy-900/70"
+            className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.14em] text-white/65"
           >
-            <item.icon className="size-4 text-brand-orange" />
+            <item.icon className="size-3.5 text-brand-orange" />
             {item.label}
             <span className="ml-6 size-1 rounded-full bg-brand-orange/40" />
           </span>

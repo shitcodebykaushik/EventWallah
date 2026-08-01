@@ -43,7 +43,7 @@ export function PitchStageStrip({
   return (
     <div className={cn("w-full", className)}>
       {/* Stage board */}
-      <div className="relative overflow-hidden rounded-[1.75rem] border border-[#c9d5e8] bg-white shadow-[var(--shadow-card)]">
+      <div className="relative overflow-hidden rounded-sm border border-navy-900/20 bg-[#fffdf8]">
         {/* Console header */}
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#e8eef6] bg-linear-to-r from-navy-950 via-navy-900 to-navy-800 px-4 py-3 sm:px-6">
           <div className="flex items-center gap-2">
@@ -92,16 +92,16 @@ export function PitchStageStrip({
                 >
                   <article
                     className={cn(
-                      "flex h-full flex-col rounded-2xl border p-4 transition-shadow",
+                      "flex h-full flex-col rounded-sm border p-4 transition-colors",
                       highlight
-                        ? "border-orange-300 bg-linear-to-b from-orange-50 to-white shadow-[var(--shadow-glow)]"
-                        : "border-[#e0e8f4] bg-[#f7f9fc] hover:border-[#c9d5e8] hover:bg-white hover:shadow-[var(--shadow-soft)]"
+                        ? "border-brand-orange bg-[#fff0e8]"
+                        : "border-navy-900/12 bg-[#f7f4ed] hover:border-navy-900/30 hover:bg-white"
                     )}
                   >
                     <div className="mb-3 flex items-center justify-between">
                       <span
                         className={cn(
-                          "relative z-10 flex size-10 items-center justify-center rounded-xl bg-linear-to-br text-white shadow-md",
+                          "relative z-10 flex size-10 items-center justify-center rounded-sm bg-linear-to-br text-white",
                           stageColors[i]
                         )}
                       >
@@ -130,7 +130,7 @@ export function PitchStageStrip({
                     </p>
                     <p
                       className={cn(
-                        "mt-3 inline-flex w-fit rounded-full px-2 py-0.5 text-[10px] font-bold tracking-wide uppercase",
+                        "mt-3 inline-flex w-fit rounded-sm px-2 py-0.5 text-[10px] font-bold tracking-wide uppercase",
                         highlight
                           ? "bg-brand-orange text-white"
                           : "bg-navy-900/5 text-navy-900/70"
@@ -187,7 +187,7 @@ export function PitchStageStrip({
         ].map((chip) => (
           <span
             key={chip}
-            className="rounded-full border border-[#dde5f0] bg-white px-3 py-1 text-[11px] font-semibold text-navy-900/70 shadow-sm"
+            className="rounded-sm border border-navy-900/15 bg-transparent px-3 py-1 text-[10px] font-semibold text-navy-900/65"
           >
             {chip}
           </span>

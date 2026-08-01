@@ -4,7 +4,6 @@ import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 
-import { SectionWave, waveFill } from "@/components/marketing/SectionWave";
 import { duration, easeWater } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
@@ -28,45 +27,43 @@ export function CtaBand({
   secondaryHref,
   secondaryLabel,
   className,
-  waveFrom = waveFill.canvas,
 }: CtaBandProps) {
   const reduced = useReducedMotion();
 
   return (
     <section
       className={cn(
-        "relative bg-background pt-20 pb-16 sm:pt-24 sm:pb-20 md:pt-28 md:pb-24",
+        "relative border-t border-navy-900/10 bg-background py-16 sm:py-20 md:py-24",
         className
       )}
     >
-      {waveFrom && (
-        <SectionWave from={waveFrom} position="top" height="md" />
-      )}
       <div className="container-page relative z-[1]">
         <motion.div
           initial={reduced ? false : { opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-10%" }}
           transition={{ duration: duration.long, ease: easeWater }}
-          className="relative overflow-hidden rounded-[2rem] border border-navy-800 bg-navy-950 px-6 py-12 text-center sm:px-10 sm:py-16"
+          className="relative overflow-hidden border border-navy-950 bg-navy-950 px-6 py-14 text-left sm:px-10 sm:py-16 md:px-16"
         >
           <div
-            className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(255,106,26,0.22),_transparent_55%),radial-gradient(ellipse_at_bottom_right,_rgba(47,111,237,0.12),_transparent_45%)]"
+            className="pointer-events-none absolute inset-y-0 left-0 w-2 bg-brand-orange"
             aria-hidden
           />
-          <div className="relative mx-auto max-w-2xl">
-            <p className="mb-4 text-[11px] font-bold tracking-[0.18em] text-brand-orange uppercase">
+          <div className="relative grid items-end gap-8 md:grid-cols-[1fr_auto]">
+            <div>
+            <p className="mb-5 text-[10px] font-bold tracking-[0.2em] text-brand-orange uppercase">
               College partnership
             </p>
-            <h2 className="font-heading text-3xl font-bold tracking-tight text-white sm:text-4xl md:text-5xl">
+            <h2 className="max-w-3xl font-heading text-4xl font-extrabold leading-[1.02] tracking-[-0.04em] text-white sm:text-5xl md:text-6xl">
               {title}
             </h2>
             {description && (
-              <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-zinc-400">
+              <p className="mt-5 max-w-xl text-base leading-relaxed text-zinc-400">
                 {description}
               </p>
             )}
-            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            </div>
+            <div className="flex flex-col gap-3 sm:flex-row md:flex-col">
               <Link
                 href={primaryHref}
                 className="btn-accent h-12 w-full px-7 sm:w-auto"

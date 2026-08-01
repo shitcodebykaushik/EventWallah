@@ -7,11 +7,11 @@ export const collegeContribution = [
 ];
 
 export const institutionalReturn = [
-  { item: "Fully produced event · turnkey delivery", value: "₹35 L equiv." },
-  { item: "National PR + livestream production", value: "₹12 L equiv." },
-  { item: "Investor & mentor network access", value: "Priceless" },
-  { item: "NAAC / NIRF documentation package", value: "Included" },
-  { item: "Photography, film, edited highlight reel", value: "₹6 L equiv." },
+  { item: "Program planning and on-site delivery", value: "In scope" },
+  { item: "Communication and livestream support", value: "Agreed package" },
+  { item: "Mentor and reviewer coordination", value: "Curated" },
+  { item: "Participation and outcome records", value: "Delivered" },
+  { item: "Photography and edited highlights", value: "Agreed package" },
 ];
 
 export const collegeProvides = [
@@ -45,28 +45,28 @@ export const collegeProvides = [
 export const launchProvides = [
   {
     id: "01",
-    title: "Full event management",
-    detail: "End-to-end production, run-of-show, stage design, lights",
+    title: "Program and event management",
+    detail: "Program plan, production schedule, stage requirements, and on-site coordination",
   },
   {
     id: "02",
     title: "Speakers, judges, investors",
-    detail: "Curation, invitations, travel, and stage briefing",
+    detail: "Selection, invitations, scheduling, travel coordination, and briefing",
   },
   {
     id: "03",
     title: "Registration platform",
-    detail: "Team sign-ups, evaluation software, judging portal",
+    detail: "Team registration, evaluation workflow, and jury materials",
   },
   {
     id: "04",
     title: "Content, film & photography",
-    detail: "Highlight reel, 500+ photos, aftermovie, livestream",
+    detail: "Event photography, edited highlights, selected interviews, and livestream support",
   },
   {
     id: "05",
     title: "PR & media amplification",
-    detail: "National press, digital media partners, creator outreach",
+    detail: "Press materials, partner communications, and coordinated digital coverage",
   },
 ];
 

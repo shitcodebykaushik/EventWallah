@@ -16,10 +16,10 @@ export function PhaseTimeline({ compact = false }: { compact?: boolean }) {
           <div className="mb-3 flex items-center gap-3 sm:mb-4 md:flex-col md:items-start">
             <span
               className={cn(
-                "relative z-10 flex size-10 items-center justify-center rounded-full text-sm font-bold shadow-sm ring-4 ring-white transition-transform duration-300 group-hover:scale-105 sm:size-11",
+                "relative z-10 flex size-10 items-center justify-center rounded-sm text-sm font-bold ring-4 ring-white transition-transform duration-300 group-hover:scale-105 sm:size-11",
                 index < 3
                   ? "bg-ink text-white"
-                  : "bg-brand-orange text-white shadow-[var(--shadow-glow)]"
+                  : "bg-brand-orange text-white"
               )}
             >
               {phase.id}

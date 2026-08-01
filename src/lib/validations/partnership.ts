@@ -38,9 +38,9 @@ export const roleLabels: Record<PartnershipLead["role"], string> = {
 };
 
 export const interestLabels: Record<PartnershipLead["interest"], string> = {
-  anchor: "Anchor partnership (100 slots)",
-  discovery: "30-min discovery call",
-  media: "Media kit / more information",
+  anchor: "2026–27 institutional partnership",
+  discovery: "30-minute planning call",
+  media: "Program information",
 };
 
 export const collegeTypeLabels = {

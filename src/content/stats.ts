@@ -3,19 +3,19 @@ export const problemStats = [
     value: "73%",
     label: "of engineering students want to start up",
     detail:
-      "Yet fewer than 5% ever pitch an investor or ship a validated prototype before graduation.",
+      "Many still graduate without testing an idea with users or presenting it to an external review panel.",
   },
   {
     value: "1 in 40",
     label: "colleges run an active incubator",
     detail:
-      "For the rest, entrepreneurship stays a theory paper — no mentors, no capital path, no pitch stage.",
+      "Many institutions rely on periodic activities without a consistent mentor or follow-up structure.",
   },
   {
     value: "₹0",
-    label: "early capital reaches most Tier-2/3 campuses",
+    label: "consistent early-stage access on many campuses",
     detail:
-      "India's next unicorn founder may already be on a campus no VC has visited. That is the gap we close.",
+      "Launch Bharat is designed to make mentor, incubator, and investor access more systematic beyond established startup hubs.",
     highlight: true,
   },
 ];
@@ -145,6 +145,6 @@ export const marketCascade = [
   {
     tier: "SOM · Year-1 focus",
     value: "500K+",
-    detail: "Reachable via 100 anchor colleges by 2025",
+    detail: "Potential reach through the 2026–27 partner cohort",
   },
 ];

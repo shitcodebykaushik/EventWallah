@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 
 export function ComparisonTable() {
   return (
-    <div className="overflow-hidden rounded-[1.75rem] border border-zinc-200 bg-white shadow-[var(--shadow-soft)]">
+    <div className="overflow-hidden rounded-sm border border-navy-900/15 bg-[#fffdf8]">
       <div className="overflow-x-auto">
         <table className="w-full min-w-[640px] text-left text-sm">
           <thead>
@@ -67,7 +67,7 @@ export function ComparisonTable() {
         {comparisonRows.map((row) => (
           <div
             key={row.dimension}
-            className="rounded-2xl border border-zinc-100 bg-zinc-50 p-4"
+            className="rounded-sm border border-navy-900/10 bg-[#f2efe7] p-4"
           >
             <p className="text-xs font-semibold tracking-wide text-zinc-400 uppercase">
               {row.dimension}

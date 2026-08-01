@@ -10,27 +10,27 @@ import {
 const faqs = [
   {
     q: "What does our college need to provide?",
-    a: "Mostly what you already have: a 500+ seat auditorium, basic AV and Wi-Fi, student volunteers, a faculty champion, and standard hospitality. Cash outlay is designed to stay near zero. Launch Bharat brings production, jury, investors, registration platform, content, and PR.",
+    a: "The institution provides the venue, basic AV and internet, student volunteers, a faculty coordinator, and agreed hospitality. Launch Bharat manages the program plan, external participants, registration workflow, production, and post-event reporting.",
   },
   {
     q: "How long from first call to the flagship weekend?",
-    a: "About 60 days. Discovery call → MoU and Launch Bharat Cell → ambassador activation and registrations → two-day flagship → incubation routing and impact documentation.",
+    a: "The standard planning window is approximately 60 days. It covers the initial review, MoU, campus team setup, registration, the two-day flagship, and the first round of post-event follow-up.",
   },
   {
     q: "Is there a fee for students?",
-    a: "No. Partner campuses run with zero student registration fee. Teams of 2–5 sign up on the Launch Bharat platform when your college hosts.",
+    a: "There is no student registration fee at partner institutions. Teams of two to five register after the institution opens its campus cohort.",
   },
   {
     q: "How does this help NAAC, NIRF, and IIC?",
-    a: "You receive an audit-ready evidence pack: activity logs, media, jury composition, outcomes — mapped to NAAC Criterion 3, NIRF innovation weight, and IIC star-rating documentation, plus Startup India-aligned pathways.",
+    a: "The post-program pack organises participation records, activity logs, jury composition, outcomes, and media assets. Each institution should review how those records apply to its own NAAC, NIRF, and IIC submissions.",
   },
   {
-    q: "Who sits on the jury — and do investors really come?",
-    a: "A curated mix of founders, operators, angels, and VCs. Investors only see pre-screened top teams in a fixed 5+3 format, with a post-event data room so follow-ups are easy — not ceremonial guest slots.",
+    q: "Who reviews the student teams?",
+    a: "The review panel is assembled from founders, operators, subject specialists, angels, and early-stage investors. Finalists use a five-minute presentation and three-minute question format, followed by structured sharing of relevant team materials.",
   },
   {
     q: "Can a student join if our college is not a partner yet?",
-    a: "Registration is campus-first in this phase. Share the partner page with your IIC, E-Cell, or Dean — or write to partnerships@launchbharat.in and we will help open a conversation.",
+    a: "Registration is currently managed through partner institutions. Students can share the partnership page with their IIC, E-Cell, or faculty lead, or contact the partnerships team for an introduction.",
   },
 ];
 
@@ -41,7 +41,7 @@ export function Faq() {
         <AccordionItem
           key={item.q}
           value={`item-${i}`}
-          className="rounded-2xl border border-[#dde5f0] bg-white px-5 shadow-[var(--shadow-soft)] not-last:border-b-[#dde5f0]"
+          className="rounded-sm border border-navy-900/15 bg-[#fffdf8] px-5 not-last:border-b-navy-900/15"
         >
           <AccordionTrigger className="py-5 text-left text-[15px] font-semibold text-navy-900 hover:no-underline">
             {item.q}

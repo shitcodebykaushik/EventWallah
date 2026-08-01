@@ -1,32 +1,32 @@
 export const dayOne = {
   title: "The Innovation Challenge",
   subtitle:
-    "Four focused hours: sealed industry problem → prototype → jury demo.",
+    "A focused build session from industry brief to prototype review.",
   items: [
     {
       time: "09:30 – 10:30",
       title: "Registration & Kickoff",
-      detail: "Team check-in, welcome, faculty keynote — energy in the room.",
+      detail: "Team check-in, program briefing, evaluation criteria, and opening remarks.",
     },
     {
       time: "10:30 – 11:00",
       title: "Problem Statement Reveal",
-      detail: "Sealed briefs opened live. Real industry challenges, not toy prompts.",
+      detail: "Teams receive the challenge briefs, supporting context, and expected outputs.",
     },
     {
       time: "11:00 – 14:30",
       title: "Ideation Sprint",
-      detail: "Build with roaming mentors — product, tech, and design on the floor.",
+      detail: "Teams develop their response with scheduled product, technology, and design reviews.",
     },
     {
       time: "15:00 – 18:00",
       title: "Jury Evaluation",
-      detail: "Five-minute demos scored live by founders, operators, and investors.",
+      detail: "Teams present five-minute demonstrations against a published scoring framework.",
     },
     {
       time: "19:00",
       title: "Top 15 Announcement",
-      detail: "Finalists named to a packed auditorium. The Grand Pitch lineup is set.",
+      detail: "The jury confirms the teams progressing to the second-day pitch program.",
     },
   ],
 };
@@ -34,32 +34,32 @@ export const dayOne = {
 export const dayTwo = {
   title: "Startup Summit & Grand Pitch",
   subtitle:
-    "Keynotes, investor panel, Top 15 on stage, expo floor, awards.",
+    "Founder sessions, investor discussion, finalist pitches, showcase, and awards.",
   items: [
     {
       time: "10:00 – 11:00",
       title: "Founder Keynotes",
-      detail: "Builders who have scaled — honest stories, not motivational fluff.",
+      detail: "Operators discuss early decisions, mistakes, and the practical work of building a company.",
     },
     {
       time: "11:00 – 12:30",
       title: "Investor Panel",
-      detail: "Live Q&A with VCs and angels on what actually earns a cheque.",
+      detail: "A moderated discussion on evaluation, readiness, and early-stage funding decisions.",
     },
     {
       time: "13:30 – 16:00",
       title: "Grand Pitch — Top 15",
-      detail: "5-minute pitch + 3-minute Q&A. Same format every campus. Broadcast-ready.",
+      detail: "Each finalist receives five minutes to present followed by three minutes of jury questions.",
     },
     {
       time: "16:00 – 18:00",
       title: "Startup Expo · 50+ Booths",
-      detail: "Demos, corporate hiring, government schemes, banking partners.",
+      detail: "Team demonstrations alongside employers, ecosystem organisations, and service partners.",
     },
     {
       time: "18:00+",
       title: "Awards & Networking",
-      detail: "Winners, media wall, founder mixer — and follow-ups that continue after.",
+      detail: "Results, closing remarks, and scheduled introductions for selected teams.",
     },
   ],
 };
@@ -85,7 +85,7 @@ export const journeySteps = [
     id: "03",
     title: "Pitch",
     detail:
-      "Five minutes to a jury of founders, operators, and VCs. Live scoring.",
+      "Present a five-minute case to a mixed jury using a common scoring framework.",
     meta: "Top 15",
     stage: "select",
   },
@@ -93,7 +93,7 @@ export const journeySteps = [
     id: "04",
     title: "Grand Pitch",
     detail:
-      "Day-2 finale: full auditorium, investor Q&A, national media and livestream.",
+      "Finalists present on the main stage and answer questions from the review panel.",
     meta: "Top 5",
     stage: "stage",
   },
@@ -101,7 +101,7 @@ export const journeySteps = [
     id: "05",
     title: "Incubate",
     detail:
-      "Warm intros to incubators, angels, and Startup India pathways within 30 days.",
+      "Suitable teams are referred to relevant incubators, mentors, grants, and investors.",
     meta: "30 days",
     stage: "capital",
   },
@@ -109,7 +109,7 @@ export const journeySteps = [
     id: "06",
     title: "Launch",
     detail:
-      "Seed conversations, national alumni network, and a real company trajectory.",
+      "Continue through product validation, founder support, and the cross-campus network.",
     meta: "Company",
     stage: "launch",
     highlight: true,
@@ -119,7 +119,7 @@ export const journeySteps = [
 export const journeyBar = [
   { label: "Prize pool", value: "₹10 Lakh+ · Cash & grants" },
   { label: "Jury", value: "VCs · Angels · Founders" },
-  { label: "Media", value: "National PR + livestream" },
+  { label: "Media", value: "Program coverage + livestream" },
   { label: "Partner campuses", value: "Zero student entry fee" },
 ];
 
@@ -132,7 +132,7 @@ export const investorPrinciples = [
   {
     title: "Structured 5+3 format",
     detail:
-      "Five-minute pitch, three-minute Q&A. Identical rules on every campus — comparable, respectful of time.",
+      "Five-minute pitch and three-minute Q&A, using a consistent format that makes teams easier to compare.",
   },
   {
     title: "Post-event data room",

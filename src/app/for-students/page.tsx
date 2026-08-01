@@ -1,95 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-
-import { CtaBand } from "@/components/marketing/CtaBand";
-import { FeatureCard } from "@/components/marketing/FeatureCard";
+import { CheckCircle2, QrCode, Search, TicketCheck } from "lucide-react";
 import { PageHero } from "@/components/marketing/PageHero";
-import { PitchStageStrip } from "@/components/marketing/PitchStageStrip";
 import { Section } from "@/components/marketing/Section";
-import { studentBenefits } from "@/content/benefits";
 
-export const metadata: Metadata = {
-  title: "For Students",
-  description:
-    "Pitch real investors, get operator mentorship, grants pathways, and a national founder network — beyond a certificate.",
-};
+export const metadata:Metadata={title:"For Students",description:"Find college events, register free and receive a verified QR pass."};
 
-export default function ForStudentsPage() {
-  return (
-    <>
-      <PageHero
-        eyebrow="For student founders"
-        title={
-          <>
-            Leave with more than a certificate —{" "}
-            <span className="text-brand-orange">leave with a trajectory.</span>
-          </>
-        }
-        description="Pitch people who write cheques. Build with mentors who have shipped. Join a founder network that stretches across India. Registration opens when your campus partners with Launch Bharat."
-        primaryHref="/program"
-        primaryLabel="See the pitch stage"
-        secondaryHref="/partner"
-        secondaryLabel="Get your campus to host"
-      />
-
-      <Section
-        align="center"
-        eyebrow="What you walk away with"
-        title="Six outcomes beyond the photo with a trophy."
-      >
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {studentBenefits.map((b) => (
-            <FeatureCard
-              key={b.id}
-              id={b.id}
-              title={b.title}
-              description={b.detail}
-              highlight={b.highlight}
-            />
-          ))}
-        </div>
-      </Section>
-
-      <Section
-        variant="muted"
-        align="center"
-        eyebrow="Your path on stage"
-        title={
-          <>
-            Register → Launch —{" "}
-            <span className="text-gradient-orange">six clear moves.</span>
-          </>
-        }
-        lead="No mystery process. Same high-signal funnel on every partner campus."
-      >
-        <div className="mx-auto max-w-6xl">
-          <PitchStageStrip />
-        </div>
-      </Section>
-
-      <Section
-        variant="dark"
-        title="Registration is campus-first"
-        lead="There is no open public signup yet. When your college partners with Launch Bharat, team registration opens free for students. Share this with your IIC, E-Cell, or Dean."
-      >
-        <Link href="/partner" className="btn-accent h-11 px-5">
-          Tell your institution
-        </Link>
-      </Section>
-
-      <CtaBand
-        title={
-          <>
-            Build something real{" "}
-            <span className="text-brand-orange">this semester.</span>
-          </>
-        }
-        description="Ask your campus leadership to host Launch Bharat — or write to partnerships if you need an introduction."
-        primaryLabel="Partnership desk"
-        primaryHref="/contact"
-        secondaryHref="/program"
-        secondaryLabel="Program details"
-      />
-    </>
-  );
-}
+export default function ForStudentsPage(){const steps=[[Search,"Find your campus","Search by college, university, city or state."],[TicketCheck,"Choose an event","Read the verified schedule, venue, organizer and capacity."],[CheckCircle2,"Register free","Enter your student details. No payment is required right now."],[QrCode,"Show your QR","Keep the pass on your phone and present it at the entrance."]];return <><PageHero eyebrow="For students" title={<>Less searching.<br/><span className="text-brand-orange">More showing up.</span></>} description="Discover what is happening at your college and reserve a free, verified event pass without chasing forms across group chats." primaryHref="/colleges" primaryLabel="Find my college" secondaryHref="/events" secondaryLabel="Browse all events"/><Section eyebrow="How it works" title="From search to entry in four clear steps."><div className="grid gap-4 md:grid-cols-4">{steps.map(([Icon,title,copy],index)=>{const Mark=Icon as typeof Search;return <article key={String(title)} className="rounded-md border border-navy-900/12 bg-[#fffdf8] p-6"><div className="flex items-center justify-between"><Mark className="size-5 text-brand-orange"/><span className="font-mono text-xs text-zinc-300">0{index+1}</span></div><h2 className="mt-10 font-bold">{String(title)}</h2><p className="mt-3 text-sm leading-relaxed text-zinc-500">{String(copy)}</p></article>})}</div></Section><Section variant="dark" title="Your pass belongs to you." lead="The QR contains an unguessable pass identifier. Your full contact details are visible only to the authorised event team."><Link href="/events" className="btn-accent">Find an event</Link></Section></>}

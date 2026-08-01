@@ -1,26 +1,26 @@
 export const site = {
-  name: "Launch Bharat",
-  tagline: "Launch Your Dream. Build the Future.",
-  edition: "2024–25 Edition",
+  name: "EventWallah",
+  tagline: "Every campus event, one simple pass.",
+  edition: "India · 2026",
   description:
-    "India's nationwide student startup movement. We turn colleges into innovation hubs — with mentorship, capital pathways, and an investor-attended pitch stage for the next generation of founders.",
-  url: "https://www.launchbharat.in",
+    "Discover events at colleges and universities across India, register free, and receive a verified QR pass.",
+  url: "https://www.eventwallah.com",
   poweredBy: {
-    name: "The Event Wallah",
+    name: "EventWallah",
     email: "info@theeventwallah.com",
     phone: "+91 9355214750",
     website: "https://www.theeventwallah.com",
     websiteLabel: "www.theeventwallah.com",
   },
   contact: {
-    partnershipsEmail: "partnerships@launchbharat.in",
-    website: "https://www.launchbharat.in",
-    websiteLabel: "www.launchbharat.in",
+    partnershipsEmail: "hello@eventwallah.com",
+    website: "https://www.eventwallah.com",
+    websiteLabel: "www.eventwallah.com",
   },
-  backing: "Aligned with Startup India · MoCI",
+  backing: "Designed around Startup India and campus innovation frameworks",
   scarcity: {
     slots: 100,
-    season: "2024–25",
+    season: "2026–27",
     priority:
       "IITs · IIMs · NITs · NAAC A+ universities and top private institutions",
   },
@@ -28,16 +28,14 @@ export const site = {
 
 /** Primary desktop links — keep short for a clean bar */
 export const navigationPrimary = [
-  { href: "/program", label: "Program" },
-  { href: "/for-colleges", label: "Colleges" },
-  { href: "/for-students", label: "Students" },
-  { href: "/impact", label: "Impact" },
+  { href: "/events", label: "Events" },
+  { href: "/colleges", label: "Colleges" },
+  { href: "/for-students", label: "For students" },
 ] as const;
 
 /** Secondary links — “More” menu + full mobile list */
 export const navigationMore = [
   { href: "/about", label: "About" },
-  { href: "/partners", label: "Track record" },
   { href: "/contact", label: "Contact" },
 ] as const;
 

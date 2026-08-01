@@ -32,6 +32,11 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
+!apps/api/.env.example
+/apps/api/data/*.db
+/apps/api/data/*.db-shm
+/apps/api/data/*.db-wal
 
 # vercel
 .vercel

@@ -1,11 +1,4 @@
-import {
-  AmbientOrbs,
-  SectionIndex,
-} from "@/components/marketing/AestheticExtras";
-import {
-  SectionWave,
-  waveFill,
-} from "@/components/marketing/SectionWave";
+import { waveFill } from "@/components/marketing/SectionWave";
 import { cn } from "@/lib/utils";
 
 type SectionVariant = "light" | "dark" | "muted" | "orange" | "water" | "white";
@@ -37,9 +30,9 @@ type SectionProps = {
 
 const variants: Record<SectionVariant, string> = {
   light: "bg-background text-ink",
-  white: "bg-white text-ink",
+  white: "bg-[#fffdf8] text-ink",
   dark: "bg-mesh-dark text-white",
-  muted: "bg-[#f3f6fb] text-ink",
+  muted: "bg-[#eeebe3] text-ink",
   water: "bg-mesh-water text-ink",
   orange: "bg-brand-orange text-white",
 };
@@ -57,45 +50,24 @@ export function Section({
   containerClassName,
   headerClassName,
   align = "left",
-  waveFrom,
-  waveTo,
-  waveHeight = "md",
-  index,
-  ambient = false,
 }: SectionProps) {
   const isDark = variant === "dark" || variant === "orange";
-  const hasTopWave = Boolean(waveFrom);
-  const hasBottomWave = Boolean(waveTo);
 
   return (
     <section
       id={id}
       className={cn(
-        "relative overflow-hidden",
-        hasTopWave
-          ? "pt-20 sm:pt-24 md:pt-28"
-          : "pt-16 sm:pt-20 md:pt-28",
-        hasBottomWave
-          ? "pb-20 sm:pb-24 md:pb-28"
-          : "pb-16 sm:pb-20 md:pb-28",
+        "relative overflow-hidden border-t border-navy-900/10 py-18 sm:py-24 md:py-32",
+        isDark && "border-white/10",
         variants[variant],
         className
       )}
     >
-      {waveFrom && (
-        <SectionWave from={waveFrom} position="top" height={waveHeight} />
-      )}
-      {waveTo && (
-        <SectionWave from={waveTo} position="bottom" height={waveHeight} />
-      )}
-      {ambient && <AmbientOrbs />}
-      {index && <SectionIndex n={index} />}
-
       <div className={cn("container-page relative z-[1]", containerClassName)}>
         {(eyebrow || title || lead) && (
           <header
             className={cn(
-              "mb-10 max-w-3xl md:mb-14",
+              "mb-10 max-w-4xl md:mb-14",
               align === "center" && "mx-auto text-center",
               headerClassName
             )}
@@ -103,10 +75,10 @@ export function Section({
             {eyebrow && (
               <p
                 className={cn(
-                  "eyebrow mb-4",
+                  "eyebrow mb-6",
                   align === "center" && "mx-auto",
                   isDark &&
-                    "border-white/15 bg-white/10 text-white/80 shadow-none"
+                    "border-brand-orange text-white/55"
                 )}
               >
                 {eyebrow}

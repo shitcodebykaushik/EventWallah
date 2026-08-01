@@ -41,23 +41,23 @@ function AgendaList({
 export function AgendaTabs() {
   return (
     <Tabs defaultValue="day1" className="w-full">
-      <TabsList className="mb-6 grid h-auto w-full grid-cols-2 rounded-full border border-zinc-200 bg-zinc-100 p-1 shadow-inner">
+      <TabsList className="mb-6 grid h-auto w-full grid-cols-2 rounded-sm border border-navy-900/15 bg-[#eeebe3] p-1">
         <TabsTrigger
           value="day1"
-          className="rounded-full py-2.5 text-sm font-semibold data-active:bg-white data-active:text-ink data-active:shadow-sm"
+          className="rounded-sm py-2.5 text-sm font-semibold data-active:bg-white data-active:text-ink"
         >
           Day 01 · Challenge
         </TabsTrigger>
         <TabsTrigger
           value="day2"
-          className="rounded-full py-2.5 text-sm font-semibold data-active:bg-ink data-active:text-white data-active:shadow-sm"
+          className="rounded-sm py-2.5 text-sm font-semibold data-active:bg-ink data-active:text-white"
         >
           Day 02 · Grand Pitch
         </TabsTrigger>
       </TabsList>
       <TabsContent
         value="day1"
-        className="rounded-[1.75rem] border border-zinc-200 bg-white p-6 shadow-[var(--shadow-soft)] md:p-8"
+        className="rounded-sm border border-navy-900/15 bg-[#fffdf8] p-6 md:p-8"
       >
         <div className="mb-6 border-b border-zinc-100 pb-5">
           <p className="text-[11px] font-semibold tracking-wide text-brand-orange uppercase">
@@ -70,7 +70,7 @@ export function AgendaTabs() {
       </TabsContent>
       <TabsContent
         value="day2"
-        className="rounded-[1.75rem] border border-zinc-800 bg-ink p-6 text-white shadow-[var(--shadow-soft)] md:p-8"
+        className="rounded-sm border border-zinc-800 bg-ink p-6 text-white md:p-8"
       >
         <div className="mb-6 border-b border-white/10 pb-5">
           <p className="text-[11px] font-semibold tracking-wide text-brand-orange uppercase">

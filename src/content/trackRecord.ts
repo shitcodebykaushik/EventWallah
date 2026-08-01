@@ -29,25 +29,25 @@ export const portfolio = [
 export const testimonials = [
   {
     quote:
-      "This is what our IIC has been trying to become for three years — assembled and delivered in a single weekend.",
-    role: "Vice Chancellor",
-    org: "Tier-1 Private University · North India",
-    initials: "VC",
+      "The program should extend the institution's existing IIC and entrepreneurship work rather than operate as a disconnected event.",
+    role: "Institutional fit",
+    org: "How the campus team and Launch Bharat work together",
+    initials: "01",
   },
   {
     quote:
-      "I've seen a hundred college pitch events. Launch Bharat is the first one where I actually took a follow-up meeting the same night.",
-    role: "Angel Investor & Partner",
-    org: "Early-stage venture fund · Bengaluru",
-    initials: "AP",
+      "Investors need a screened set of teams, concise materials, and a clear process for arranging follow-up conversations.",
+    role: "Investor experience",
+    org: "How the review process respects investor time",
+    initials: "02",
     highlight: true,
   },
   {
     quote:
-      "Our NIRF innovation score moved measurably in the first year. That alone justifies the partnership.",
-    role: "Incubation Head",
-    org: "State University · South India",
-    initials: "IH",
+      "Institutional teams need participation, jury, outcome, and media records in a form they can review and reuse.",
+    role: "Program reporting",
+    org: "How activity records are prepared after the program",
+    initials: "03",
   },
 ];
 

@@ -14,27 +14,29 @@ export default function PrivacyPage() {
       <PageHero
         eyebrow="Legal"
         title="Privacy policy"
-        description="Placeholder policy for the Launch Bharat frontend MVP."
+        description="How information submitted through EventWallah is handled."
         dark={false}
       />
       <Section>
         <div className="prose prose-slate max-w-3xl">
           <p>
-            This website is a marketing frontend MVP for {site.name}, operated
-            in association with {site.poweredBy.name}. Partnership inquiry forms
-            currently validate data in the browser only and do not transmit
-            personal information to a server.
+            {site.name} stores the information a student submits when registering,
+            including their name, contact details, institution, course, event,
+            pass status, and check-in time. This information is used to issue the
+            pass, prevent duplicate registrations, and help authorised event teams
+            manage entry.
           </p>
           <p className="mt-4">
-            When a backend is connected, this page will describe how lead data is
-            stored, processed, and retained. For privacy questions, contact{" "}
+            A QR code contains a random pass reference rather than the attendee&apos;s
+            personal details. Registration records are available only to authorised
+            event personnel. For access, correction, or deletion requests, contact{" "}
             <a
               className="text-brand-orange underline"
               href={`mailto:${site.contact.partnershipsEmail}`}
             >
               {site.contact.partnershipsEmail}
             </a>
-            .
+            . Do not submit sensitive financial, identity-document, or health data.
           </p>
         </div>
       </Section>

@@ -1,11 +1,9 @@
-import { SkeletonCard, SkeletonStatCard, SkeletonPhaseCard } from "@/components/ui/Skeleton";
+import { SkeletonStatCard } from "@/components/ui/Skeleton";
 
 function LoadingSection({
   children,
-  count,
 }: {
   children: React.ReactNode;
-  count?: number;
 }) {
   return (
     <div className="py-14 sm:py-16 md:py-24">
@@ -47,7 +45,7 @@ export default function Loading() {
         </div>
       </section>
 
-      <LoadingSection count={3}>
+      <LoadingSection>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 3 }).map((_, i) => (
             <SkeletonStatCard key={i} />

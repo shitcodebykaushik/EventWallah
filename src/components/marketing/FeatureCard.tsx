@@ -30,30 +30,17 @@ export function FeatureCard({
 
   const content = (
     <>
-      {/* corner accent */}
-      <span
-        className={cn(
-          "pointer-events-none absolute top-0 right-0 size-20 rounded-bl-[2.5rem] opacity-60",
-          highlight
-            ? "bg-linear-to-bl from-white/10 to-transparent"
-            : dark
-              ? "bg-linear-to-bl from-white/5 to-transparent"
-              : "bg-linear-to-bl from-brand-orange/5 to-transparent"
-        )}
-        aria-hidden
-      />
-
       {(id || icon) && (
         <div className="relative mb-4 flex items-center gap-3">
           {icon && (
             <span
               className={cn(
-                "flex size-11 items-center justify-center rounded-2xl transition-transform duration-300 group-hover:scale-105 group-hover:rotate-[-2deg]",
+                "flex size-10 items-center justify-center rounded-sm transition-colors duration-300",
                 highlight
-                  ? "bg-white/15 text-white ring-1 ring-white/10"
+                  ? "bg-white text-navy-950"
                   : dark
-                    ? "bg-white/10 text-white ring-1 ring-white/10"
-                    : "bg-linear-to-br from-orange-50 to-white text-brand-orange ring-1 ring-orange-100 shadow-sm"
+                    ? "border border-white/20 text-white"
+                    : "bg-navy-950 text-white"
               )}
             >
               {icon}
@@ -104,7 +91,7 @@ export function FeatureCard({
       {/* bottom accent line */}
       <span
         className={cn(
-          "pointer-events-none absolute inset-x-5 bottom-0 h-px scale-x-0 bg-linear-to-r from-transparent via-brand-orange/50 to-transparent transition-transform duration-500 group-hover:scale-x-100",
+          "pointer-events-none absolute inset-x-0 bottom-0 h-0.5 scale-x-0 origin-left bg-brand-orange transition-transform duration-500 group-hover:scale-x-100",
           (highlight || dark) && "via-white/30"
         )}
         aria-hidden
@@ -113,12 +100,12 @@ export function FeatureCard({
   );
 
   const classes = cn(
-    "group relative flex h-full flex-col overflow-hidden rounded-3xl p-5 sm:p-6 card-shine",
+    "group relative flex h-full min-h-[220px] flex-col overflow-hidden rounded-sm border-t-2 p-6 sm:p-7",
     highlight
-      ? "border border-transparent bg-linear-to-br from-navy-900 to-navy-950 text-white shadow-[var(--shadow-soft)]"
+      ? "border-x border-b border-brand-orange bg-brand-orange text-white"
       : dark
-        ? "border border-white/10 bg-navy-900/80 text-white"
-        : "border border-[#dde5f0] bg-white shadow-[var(--shadow-soft)]",
+        ? "border-x border-b border-white/15 bg-transparent text-white"
+        : "border-x border-b border-navy-900/12 bg-[#fffdf8]",
     className
   );
 

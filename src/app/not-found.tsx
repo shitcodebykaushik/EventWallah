@@ -1,8 +1,6 @@
 import Link from "next/link";
 import { Home, Search } from "lucide-react";
 
-import { site } from "@/content/site";
-
 export default function NotFound() {
   return (
     <div className="relative flex min-h-[70vh] flex-col items-center justify-center overflow-hidden bg-mesh-dark px-4 text-center">

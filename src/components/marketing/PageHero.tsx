@@ -1,10 +1,6 @@
-"use client";
-
 import Link from "next/link";
-import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 
-import { duration, easeWater } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
 type PageHeroProps = {
@@ -30,120 +26,68 @@ export function PageHero({
   dark = false,
   className,
 }: PageHeroProps) {
-  const reduced = useReducedMotion();
-
   return (
     <section
       className={cn(
-        "relative overflow-hidden py-14 sm:py-16 md:py-24",
-        dark ? "bg-mesh-dark text-white" : "bg-mesh-water text-ink",
+        "relative overflow-hidden border-b",
+        dark
+          ? "border-white/10 bg-navy-950 text-white"
+          : "border-navy-900/15 bg-[#f7f4ed] text-ink",
         className
       )}
     >
-      {!dark && (
-        <>
-          <div
-            className="pointer-events-none absolute inset-0 bg-grid-light opacity-40"
-            aria-hidden
-          />
-          <div
-            className="pointer-events-none absolute -top-20 right-0 size-72 rounded-full bg-brand-orange/10 blur-3xl"
-            aria-hidden
-          />
-          <div
-            className="pointer-events-none absolute bottom-0 left-0 size-64 rounded-full bg-brand-blue/8 blur-3xl"
-            aria-hidden
-          />
-        </>
-      )}
-      {dark && (
-        <div
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(255,106,26,0.15),_transparent_50%)]"
-          aria-hidden
-        />
-      )}
-      <div className="container-page relative max-w-3xl">
-        {eyebrow && (
-          <motion.p
-            initial={reduced ? false : { opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: duration.medium, ease: easeWater }}
-            className={cn(
-              "eyebrow mb-5",
-              dark && "border-white/15 bg-white/10 text-white/80 shadow-none"
+      <div className="container-page">
+        <div className={cn("flex items-center justify-between border-b py-5 text-[10px] font-bold uppercase tracking-[0.2em]", dark ? "border-white/10 text-white/35" : "border-navy-900/12 text-navy-900/40")}>
+          <span>Launch Bharat · National campus network</span>
+          <span className="hidden sm:block">The Event Wallah</span>
+        </div>
+
+        <div className="grid lg:grid-cols-[1fr_280px]">
+          <div className={cn("py-14 lg:border-r lg:py-20 lg:pr-16", dark ? "border-white/10" : "border-navy-900/15")}>
+            {eyebrow && (
+              <p className={cn("eyebrow mb-8", dark && "border-brand-orange text-white/55")}>
+                {eyebrow}
+              </p>
             )}
-          >
-            {eyebrow}
-          </motion.p>
-        )}
-        <motion.h1
-          initial={reduced ? false : { opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{
-            duration: duration.long,
-            delay: 0.05,
-            ease: easeWater,
-          }}
-          className={cn(
-            "font-heading text-[2.15rem] font-extrabold leading-[1.08] tracking-[-0.03em] sm:text-4xl md:text-5xl",
-            dark ? "text-white" : "text-ink"
-          )}
-        >
-          {title}
-        </motion.h1>
-        {description && (
-          <motion.p
-            initial={reduced ? false : { opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{
-              duration: duration.medium,
-              delay: 0.12,
-              ease: easeWater,
-            }}
-            className={cn(
-              "mt-5 max-w-2xl text-base leading-relaxed sm:text-lg",
-              dark ? "text-zinc-300" : "text-zinc-500"
+            <h1 className={cn("max-w-4xl font-heading text-[2.8rem] font-extrabold leading-[.98] tracking-[-0.045em] sm:text-5xl md:text-7xl", dark ? "text-white" : "text-navy-950")}>
+              {title}
+            </h1>
+            {description && (
+              <p className={cn("mt-8 max-w-2xl text-base leading-relaxed sm:text-lg", dark ? "text-white/55" : "text-zinc-600")}>
+                {description}
+              </p>
             )}
-          >
-            {description}
-          </motion.p>
-        )}
-        {(primaryHref || secondaryHref) && (
-          <motion.div
-            initial={reduced ? false : { opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{
-              duration: duration.medium,
-              delay: 0.18,
-              ease: easeWater,
-            }}
-            className="mt-8 flex w-full flex-col gap-3 sm:w-auto sm:flex-row"
-          >
-            {primaryHref && primaryLabel && (
-              <Link
-                href={primaryHref}
-                className={cn(
-                  dark ? "btn-accent" : "btn-primary",
-                  "h-11 w-full justify-center px-5 sm:w-auto"
+            {(primaryHref || secondaryHref) && (
+              <div className="mt-9 flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
+                {primaryHref && primaryLabel && (
+                  <Link href={primaryHref} className={cn(dark ? "btn-accent" : "btn-primary", "h-12 w-full px-6 sm:w-auto")}>
+                    {primaryLabel}
+                    <ArrowRight className="size-4" />
+                  </Link>
                 )}
-              >
-                {primaryLabel}
-                <ArrowRight className="size-4" />
-              </Link>
-            )}
-            {secondaryHref && secondaryLabel && (
-              <Link
-                href={secondaryHref}
-                className={cn(
-                  dark ? "btn-secondary-dark" : "btn-secondary-light",
-                  "h-11 w-full justify-center px-5 sm:w-auto"
+                {secondaryHref && secondaryLabel && (
+                  <Link href={secondaryHref} className={cn(dark ? "btn-secondary-dark" : "btn-secondary-light", "h-12 w-full px-6 sm:w-auto")}>
+                    {secondaryLabel}
+                  </Link>
                 )}
-              >
-                {secondaryLabel}
-              </Link>
+              </div>
             )}
-          </motion.div>
-        )}
+          </div>
+
+          <aside className="hidden py-20 pl-9 lg:flex lg:flex-col lg:justify-between">
+            <p className={cn("text-[10px] font-bold uppercase tracking-[.2em]", dark ? "text-white/35" : "text-navy-900/35")}>
+              Campus to company
+            </p>
+            <div>
+              <p className={cn("font-heading text-6xl font-extrabold", dark ? "text-white/10" : "text-navy-900/10")}>
+                LB
+              </p>
+              <p className={cn("mt-4 border-t pt-4 text-sm font-semibold leading-relaxed", dark ? "border-white/15 text-white/65" : "border-navy-900/15 text-navy-900/65")}>
+                A repeatable operating system for campus innovation.
+              </p>
+            </div>
+          </aside>
+        </div>
       </div>
     </section>
   );

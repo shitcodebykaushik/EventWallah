@@ -30,17 +30,6 @@ export function StatCard({
 
   const content = (
     <>
-      <span
-        className={cn(
-          "pointer-events-none absolute -top-8 -right-8 size-28 rounded-full blur-2xl",
-          highlight
-            ? "bg-brand-orange/20"
-            : dark
-              ? "bg-white/5"
-              : "bg-brand-blue/10"
-        )}
-        aria-hidden
-      />
       {caption && (
         <p
           className={cn(
@@ -85,12 +74,12 @@ export function StatCard({
   );
 
   const classes = cn(
-    "group relative flex h-full flex-col overflow-hidden rounded-3xl p-5 sm:p-6 card-shine",
+    "group relative flex h-full flex-col overflow-hidden rounded-sm border-t-2 p-6 sm:p-7",
     highlight
-      ? "border border-orange-200/90 bg-linear-to-br from-orange-50 via-white to-white shadow-[var(--shadow-soft)] glow-orange"
+      ? "border-x border-b border-brand-orange bg-[#fff0e8]"
       : dark
-        ? "border border-white/10 bg-navy-900 text-white"
-        : "border border-[#dde5f0] bg-white shadow-[var(--shadow-soft)]",
+        ? "border-x border-b border-white/15 bg-transparent text-white"
+        : "border-x border-b border-navy-900/12 bg-[#fffdf8]",
     className
   );
 

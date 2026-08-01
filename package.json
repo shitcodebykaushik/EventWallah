@@ -1,12 +1,17 @@
 {
-  "name": "web",
+  "name": "eventwallah-monorepo",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "node scripts/run-local.mjs",
+    "dev:web": "next dev",
+    "dev:api": "cd apps/api && go run ./cmd/server",
     "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
+    "start": "node scripts/run-local.mjs --production",
+    "start:web": "next start",
+    "lint": "eslint",
+    "test:api": "cd apps/api && go test ./...",
+    "import:colleges": "cd apps/api && go run ./cmd/import-colleges"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",

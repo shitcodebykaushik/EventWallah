@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckCircle2, Loader2, Send } from "lucide-react";
 
@@ -34,7 +34,7 @@ export function PartnershipForm() {
     register,
     handleSubmit,
     setValue,
-    watch,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<PartnershipLead>({
     resolver: zodResolver(partnershipSchema),
@@ -44,10 +44,10 @@ export function PartnershipForm() {
     },
   });
 
-  const consent = watch("consent");
-  const role = watch("role");
-  const interest = watch("interest");
-  const collegeType = watch("collegeType");
+  const consent = useWatch({ control, name: "consent" });
+  const role = useWatch({ control, name: "role" });
+  const interest = useWatch({ control, name: "interest" });
+  const collegeType = useWatch({ control, name: "collegeType" });
 
   async function onSubmit(data: PartnershipLead) {
     await new Promise((r) => setTimeout(r, 900));
@@ -57,18 +57,17 @@ export function PartnershipForm() {
 
   if (submitted) {
     return (
-      <div className="relative overflow-hidden rounded-3xl border border-emerald-200 bg-linear-to-br from-emerald-50 to-white p-10 text-center shadow-[var(--shadow-soft)]">
+      <div className="relative overflow-hidden rounded-md border border-emerald-300 bg-emerald-50 p-10 text-center">
         <div className="relative mx-auto flex size-16 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 ring-8 ring-emerald-50">
           <CheckCircle2 className="size-8" />
         </div>
         <h3 className="relative mt-5 text-2xl font-bold text-ink">
-          Request received
+          Details checked
         </h3>
         <p className="relative mx-auto mt-3 max-w-md text-sm leading-relaxed text-zinc-500">
-          Thanks for your interest in becoming a Launch Bharat anchor partner.
-          Our partnerships desk will respond within{" "}
-          <strong className="text-ink">48 business hours</strong> with next
-          steps for the discovery call.
+          The form is currently running in pilot mode and has not transmitted
+          your details. Please email the partnerships desk to begin the
+          2026–27 planning conversation.
         </p>
         <motion.button
           type="button"
@@ -78,7 +77,7 @@ export function PartnershipForm() {
           whileTap={{ scale: 0.97 }}
           transition={springSoft}
         >
-          Submit another inquiry
+          Review another inquiry
         </motion.button>
       </div>
     );
@@ -87,18 +86,18 @@ export function PartnershipForm() {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="space-y-5 rounded-3xl border border-zinc-200 bg-white p-6 shadow-[var(--shadow-soft)] md:p-8"
+      className="space-y-5 rounded-md border border-navy-900/15 bg-[#fffdf8] p-6 md:p-8"
       noValidate
     >
-      <div className="border-b border-zinc-100 pb-5">
+      <div className="border-b border-navy-900/8 pb-6">
         <p className="text-[11px] font-semibold tracking-wide text-brand-orange uppercase">
           Partnership inquiry
         </p>
         <h3 className="mt-1 text-lg font-bold text-ink">
-          Request a 30-minute discovery call
+          Request a 30-minute planning call
         </h3>
         <p className="mt-1 text-sm text-zinc-500">
-          We typically respond within 48 business hours.
+          Share enough context for the partnerships team to prepare.
         </p>
       </div>
 
@@ -111,7 +110,7 @@ export function PartnershipForm() {
           <Input
             id="fullName"
             placeholder="Dr. Priya Sharma"
-            className="h-11 rounded-xl"
+          className="h-12 rounded-xl border-navy-900/10 bg-white"
             {...register("fullName")}
           />
         </Field>
@@ -120,7 +119,7 @@ export function PartnershipForm() {
             id="email"
             type="email"
             placeholder="dean@university.edu.in"
-            className="h-11 rounded-xl"
+          className="h-12 rounded-xl border-navy-900/10 bg-white"
             {...register("email")}
           />
         </Field>
@@ -129,7 +128,7 @@ export function PartnershipForm() {
             id="phone"
             type="tel"
             placeholder="+91 98XXX XXXXX"
-            className="h-11 rounded-xl"
+          className="h-12 rounded-xl border-navy-900/10 bg-white"
             {...register("phone")}
           />
         </Field>
@@ -141,7 +140,7 @@ export function PartnershipForm() {
           <Input
             id="institutionName"
             placeholder="College / University name"
-            className="h-11 rounded-xl"
+          className="h-12 rounded-xl border-navy-900/10 bg-white"
             {...register("institutionName")}
           />
         </Field>
@@ -154,7 +153,7 @@ export function PartnershipForm() {
               })
             }
           >
-            <SelectTrigger className="h-11 w-full rounded-xl">
+            <SelectTrigger className="h-12 w-full rounded-xl border-navy-900/10 bg-white">
               <SelectValue placeholder="Select role" />
             </SelectTrigger>
             <SelectContent>
@@ -174,7 +173,7 @@ export function PartnershipForm() {
           <Input
             id="cityState"
             placeholder="Bengaluru, Karnataka"
-            className="h-11 rounded-xl"
+          className="h-12 rounded-xl border-navy-900/10 bg-white"
             {...register("cityState")}
           />
         </Field>
@@ -185,7 +184,7 @@ export function PartnershipForm() {
               setValue("collegeType", v as PartnershipLead["collegeType"])
             }
           >
-            <SelectTrigger className="h-11 w-full rounded-xl">
+            <SelectTrigger className="h-12 w-full rounded-xl border-navy-900/10 bg-white">
               <SelectValue placeholder="Select type" />
             </SelectTrigger>
             <SelectContent>
@@ -206,7 +205,7 @@ export function PartnershipForm() {
               })
             }
           >
-            <SelectTrigger className="h-11 w-full rounded-xl">
+            <SelectTrigger className="h-12 w-full rounded-xl border-navy-900/10 bg-white">
               <SelectValue placeholder="Select interest" />
             </SelectTrigger>
             <SelectContent>
@@ -225,12 +224,12 @@ export function PartnershipForm() {
           id="message"
           rows={4}
           placeholder="Preferred dates, IIC status, questions for the partnerships desk…"
-          className="rounded-xl"
+          className="rounded-xl border-navy-900/10 bg-white"
           {...register("message")}
         />
       </Field>
 
-      <div className="flex items-start gap-3 rounded-2xl border border-zinc-100 bg-zinc-50 p-4">
+      <div className="flex items-start gap-3 rounded-sm border border-navy-900/10 bg-[#f2efe7] p-4">
         <Checkbox
           id="consent"
           checked={!!consent}
@@ -275,12 +274,13 @@ export function PartnershipForm() {
         ) : (
           <>
             <Send className="size-4" />
-            Request discovery call
+            Check inquiry details
           </>
         )}
       </motion.button>
       <p className="text-xs text-slate-500">
-        Frontend MVP — validated in-browser; not stored on a server yet.
+        This pilot form currently validates details in your browser and does not
+        transmit them. You can also email the partnerships desk directly.
       </p>
     </form>
   );

@@ -41,33 +41,33 @@ export function AudienceRails() {
   const rails = [
     {
       who: "Colleges",
-      title: "Rankings, brand, zero chaos",
+      title: "A documented campus program",
       points: [
-        "NAAC / NIRF / IIC evidence pack",
-        "Near-zero cash; in-kind partnership",
-        "National PR with your campus at the centre",
+        "Organised participation and outcome records",
+        "Clear division of institutional responsibilities",
+        "Program media for campus communication",
       ],
       href: "/for-colleges",
       cta: "See college ROI",
     },
     {
       who: "Students",
-      title: "Pitch people who write cheques",
+      title: "Build, present, and understand the next step",
       points: [
-        "Jury of VCs, angels & operators",
-        "₹10L+ prizes, grants & warm intros",
-        "Alumni network across 100+ campuses",
+        "Reviews from founders, investors, and operators",
+        "Guidance on grants, incubation, and funding readiness",
+        "Continued contact with the cross-campus cohort",
       ],
       href: "/for-students",
       cta: "Student journey",
     },
     {
       who: "Investors",
-      title: "Campus deal flow, filtered",
+      title: "A more efficient review process",
       points: [
-        "Only pre-screened top ~5%",
-        "Same 5+3 format every campus",
-        "Data room live within 24 hours",
+        "Screened teams and concise materials",
+        "A consistent five-plus-three-minute format",
+        "Organised follow-up information after the event",
       ],
       href: "/program",
       cta: "Pitch format",
@@ -80,7 +80,7 @@ export function AudienceRails() {
         <Link
           key={rail.who}
           href={rail.href}
-          className="audience-card group block transition-all duration-300 hover:-translate-y-1 hover:shadow-[var(--shadow-card-hover)]"
+          className="audience-card group block transition-colors duration-300 hover:border-brand-orange/60"
         >
           <p className="text-[11px] font-bold tracking-[0.16em] text-brand-orange uppercase">
             {rail.who}
