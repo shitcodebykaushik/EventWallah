@@ -3,7 +3,7 @@ import type { MetadataRoute } from "next";
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = "https://www.eventwallah.com";
   const lastModified = new Date();
-  const publicPaths = ["/", "/events", "/colleges", "/for-students", "/about", "/contact"];
+	const publicPaths = ["/", "/launch-bharat", "/events", "/colleges", "/for-students", "/about", "/contact"];
   const staticPages = publicPaths.map((href) => ({
     url: `${baseUrl}${href === "/" ? "" : href}`,
     lastModified,

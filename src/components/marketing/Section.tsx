@@ -31,9 +31,9 @@ type SectionProps = {
 const variants: Record<SectionVariant, string> = {
   light: "bg-background text-ink",
   white: "bg-[#fffdf8] text-ink",
-  dark: "bg-mesh-dark text-white",
+  dark: "bg-navy-950 text-white",
   muted: "bg-[#eeebe3] text-ink",
-  water: "bg-mesh-water text-ink",
+  water: "bg-[#f4f1e9] text-ink",
   orange: "bg-brand-orange text-white",
 };
 

@@ -11,9 +11,11 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"net"
 	"net/http"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/shitcodebykaushik/EventWallah/apps/api/internal/store"
@@ -26,6 +28,14 @@ type Server struct {
 	webURL        string
 	allowedOrigin string
 	logger        *slog.Logger
+	limitMu       sync.Mutex
+	limits        map[string]requestLimit
+	securityKey   [32]byte
+}
+
+type requestLimit struct {
+	count   int
+	resetAt time.Time
 }
 
 type College struct {
@@ -84,8 +94,12 @@ type Registration struct {
 }
 type adminContextKey struct{}
 
-func New(st *store.Store, webURL, allowedOrigin string, logger *slog.Logger) http.Handler {
-	s := &Server{store: st, webURL: strings.TrimRight(webURL, "/"), allowedOrigin: allowedOrigin, logger: logger}
+func New(st *store.Store, webURL, allowedOrigin string, logger *slog.Logger, securityKeys ...string) http.Handler {
+	keyMaterial := "eventwallah-development-security-key"
+	if len(securityKeys) > 0 && strings.TrimSpace(securityKeys[0]) != "" {
+		keyMaterial = securityKeys[0]
+	}
+	s := &Server{store: st, webURL: strings.TrimRight(webURL, "/"), allowedOrigin: allowedOrigin, logger: logger, limits: map[string]requestLimit{}, securityKey: sha256.Sum256([]byte(keyMaterial))}
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /health", s.health)
 	mux.HandleFunc("GET /api/v1/colleges", s.listColleges)
@@ -95,54 +109,142 @@ func New(st *store.Store, webURL, allowedOrigin string, logger *slog.Logger) htt
 	mux.HandleFunc("GET /api/v1/events/{slug}", s.getEvent)
 	mux.HandleFunc("GET /api/v1/events/{slug}/tickets", s.publicTickets)
 	mux.HandleFunc("POST /api/v1/events/{slug}/orders", s.createOrder)
-	mux.HandleFunc("POST /api/v1/events/{slug}/registrations", s.register)
 	mux.HandleFunc("GET /api/v1/passes/{token}", s.getPass)
 	mux.HandleFunc("GET /api/v1/passes/{token}/qr", s.passQR)
+	mux.HandleFunc("GET /api/v1/launch-bharat", s.launchBharatPublic)
+	mux.HandleFunc("GET /api/v1/launch-bharat/legal", s.launchBharatLegal)
+	mux.HandleFunc("POST /api/v1/launch-bharat/applications", s.launchBharatApply)
+	mux.HandleFunc("POST /api/v1/launch-bharat/partnership-inquiries", s.launchBharatPartnershipInquiry)
+	mux.HandleFunc("POST /api/v1/launch-bharat/applicant/login", s.launchApplicantLogin)
+	mux.Handle("POST /api/v1/launch-bharat/applicant/logout", s.applicantAuth(http.HandlerFunc(s.launchApplicantLogout)))
+	mux.Handle("GET /api/v1/launch-bharat/applicant/me", s.applicantAuth(http.HandlerFunc(s.launchApplicantMe)))
+	mux.Handle("PUT /api/v1/launch-bharat/applicant/application", s.applicantAuth(http.HandlerFunc(s.launchApplicantUpdate)))
+	mux.Handle("POST /api/v1/launch-bharat/applicant/withdraw", s.applicantAuth(http.HandlerFunc(s.launchApplicantWithdraw)))
+	mux.Handle("PUT /api/v1/launch-bharat/applicant/password", s.applicantAuth(http.HandlerFunc(s.launchApplicantPassword)))
+	mux.Handle("POST /api/v1/launch-bharat/applicant/documents", s.applicantAuth(http.HandlerFunc(s.launchApplicantUpload)))
+	mux.Handle("GET /api/v1/launch-bharat/applicant/documents/{id}", s.applicantAuth(http.HandlerFunc(s.launchApplicantDocument)))
 	mux.HandleFunc("POST /api/v1/admin/login", s.login)
 	mux.Handle("GET /api/v1/admin/me", s.auth(http.HandlerFunc(s.me)))
 	mux.Handle("POST /api/v1/admin/logout", s.auth(http.HandlerFunc(s.logout)))
-	mux.Handle("GET /api/v1/admin/dashboard", s.auth(http.HandlerFunc(s.dashboard)))
-	mux.Handle("GET /api/v1/admin/events", s.auth(http.HandlerFunc(s.adminEvents)))
+	mux.Handle("GET /api/v1/admin/dashboard", s.auth(s.roles(http.HandlerFunc(s.dashboard), "owner", "event_manager", "ticketing_manager", "sponsorship_manager", "finance_manager", "checkin_operator", "viewer")))
+	mux.Handle("GET /api/v1/admin/events", s.auth(s.roles(http.HandlerFunc(s.adminEvents), "owner", "event_manager", "ticketing_manager", "sponsorship_manager", "finance_manager", "checkin_operator", "viewer")))
 	mux.Handle("POST /api/v1/admin/events", s.auth(s.roles(http.HandlerFunc(s.createEvent), "owner", "event_manager")))
 	mux.Handle("PUT /api/v1/admin/events/{id}", s.auth(s.roles(http.HandlerFunc(s.updateEvent), "owner", "event_manager")))
-	mux.Handle("GET /api/v1/admin/events/{id}/registrations", s.auth(http.HandlerFunc(s.eventRegistrations)))
+	mux.Handle("GET /api/v1/admin/events/{id}/registrations", s.auth(s.roles(http.HandlerFunc(s.eventRegistrations), "owner", "event_manager", "ticketing_manager", "checkin_operator")))
 	mux.Handle("POST /api/v1/admin/colleges", s.auth(s.roles(http.HandlerFunc(s.createCollege), "owner", "event_manager")))
 	mux.Handle("POST /api/v1/admin/check-in", s.auth(s.roles(http.HandlerFunc(s.checkIn), "owner", "event_manager", "checkin_operator")))
-	mux.Handle("GET /api/v1/admin/events/{id}/tickets", s.auth(http.HandlerFunc(s.adminTickets)))
+	mux.Handle("GET /api/v1/admin/events/{id}/tickets", s.auth(s.roles(http.HandlerFunc(s.adminTickets), "owner", "event_manager", "ticketing_manager", "finance_manager", "viewer")))
 	mux.Handle("POST /api/v1/admin/events/{id}/tickets", s.auth(s.roles(http.HandlerFunc(s.createTicket), "owner", "event_manager", "ticketing_manager")))
 	mux.Handle("PUT /api/v1/admin/tickets/{id}", s.auth(s.roles(http.HandlerFunc(s.updateTicket), "owner", "event_manager", "ticketing_manager")))
-	mux.Handle("GET /api/v1/admin/orders", s.auth(http.HandlerFunc(s.listOrders)))
-	mux.Handle("GET /api/v1/admin/coupons", s.auth(http.HandlerFunc(s.listCoupons)))
+	mux.Handle("GET /api/v1/admin/orders", s.auth(s.roles(http.HandlerFunc(s.listOrders), "owner", "event_manager", "ticketing_manager", "finance_manager")))
+	mux.Handle("GET /api/v1/admin/coupons", s.auth(s.roles(http.HandlerFunc(s.listCoupons), "owner", "event_manager", "ticketing_manager", "finance_manager")))
 	mux.Handle("POST /api/v1/admin/coupons", s.auth(s.roles(http.HandlerFunc(s.createCoupon), "owner", "event_manager", "ticketing_manager")))
-	mux.Handle("GET /api/v1/admin/sponsors", s.auth(http.HandlerFunc(s.listSponsors)))
+	mux.Handle("GET /api/v1/admin/sponsors", s.auth(s.roles(http.HandlerFunc(s.listSponsors), "owner", "sponsorship_manager", "finance_manager")))
 	mux.Handle("POST /api/v1/admin/sponsors", s.auth(s.roles(http.HandlerFunc(s.createSponsor), "owner", "sponsorship_manager")))
-	mux.Handle("GET /api/v1/admin/sponsorship-deals", s.auth(http.HandlerFunc(s.listDeals)))
+	mux.Handle("GET /api/v1/admin/sponsorship-deals", s.auth(s.roles(http.HandlerFunc(s.listDeals), "owner", "sponsorship_manager", "finance_manager")))
 	mux.Handle("POST /api/v1/admin/sponsorship-deals", s.auth(s.roles(http.HandlerFunc(s.createDeal), "owner", "sponsorship_manager")))
 	mux.Handle("PUT /api/v1/admin/sponsorship-deals/{id}", s.auth(s.roles(http.HandlerFunc(s.updateDeal), "owner", "sponsorship_manager")))
 	mux.Handle("POST /api/v1/admin/sponsorship-deals/{id}/deliverables", s.auth(s.roles(http.HandlerFunc(s.createDeliverable), "owner", "sponsorship_manager")))
 	mux.Handle("PUT /api/v1/admin/deliverables/{id}", s.auth(s.roles(http.HandlerFunc(s.updateDeliverable), "owner", "sponsorship_manager")))
-	mux.Handle("GET /api/v1/admin/finance", s.auth(http.HandlerFunc(s.financeSummary)))
+	mux.Handle("GET /api/v1/admin/finance", s.auth(s.roles(http.HandlerFunc(s.financeSummary), "owner", "finance_manager")))
 	mux.Handle("POST /api/v1/admin/expenses", s.auth(s.roles(http.HandlerFunc(s.createExpense), "owner", "finance_manager")))
-	mux.Handle("GET /api/v1/admin/expenses", s.auth(http.HandlerFunc(s.listExpenses)))
-	mux.Handle("GET /api/v1/admin/audit", s.auth(http.HandlerFunc(s.listAudit)))
+	mux.Handle("GET /api/v1/admin/expenses", s.auth(s.roles(http.HandlerFunc(s.listExpenses), "owner", "finance_manager")))
+	mux.Handle("GET /api/v1/admin/audit", s.auth(s.roles(http.HandlerFunc(s.listAudit), "owner")))
+	mux.Handle("GET /api/v1/admin/launch-bharat", s.auth(s.roles(http.HandlerFunc(s.launchBharatAdmin), "owner", "event_manager")))
+	mux.Handle("POST /api/v1/admin/launch-bharat/partnerships", s.auth(s.roles(http.HandlerFunc(s.launchBharatCreatePartnership), "owner", "event_manager")))
+	mux.Handle("POST /api/v1/admin/launch-bharat/problems", s.auth(s.roles(http.HandlerFunc(s.launchBharatCreateProblem), "owner", "event_manager")))
+	mux.Handle("PUT /api/v1/admin/launch-bharat/teams/{id}/stage", s.auth(s.roles(http.HandlerFunc(s.launchBharatUpdateTeamStage), "owner", "event_manager")))
+	mux.Handle("POST /api/v1/admin/launch-bharat/teams/{id}/evaluations", s.auth(s.roles(http.HandlerFunc(s.launchBharatEvaluateTeam), "owner", "event_manager")))
+	mux.Handle("GET /api/v1/admin/launch-bharat/operations", s.auth(s.roles(http.HandlerFunc(s.launchOperationsAdmin), "owner", "event_manager")))
+	mux.Handle("PUT /api/v1/admin/launch-bharat/program", s.auth(s.roles(http.HandlerFunc(s.launchProgramUpdate), "owner", "event_manager")))
+	mux.Handle("GET /api/v1/admin/launch-bharat/teams/{id}", s.auth(s.roles(http.HandlerFunc(s.launchTeamDetail), "owner", "event_manager")))
+	mux.Handle("PUT /api/v1/admin/launch-bharat/teams/{id}/review", s.auth(s.roles(http.HandlerFunc(s.launchTeamReview), "owner", "event_manager")))
+	mux.Handle("GET /api/v1/admin/launch-bharat/documents/{id}", s.auth(s.roles(http.HandlerFunc(s.launchAdminDocument), "owner", "event_manager")))
+	mux.Handle("PUT /api/v1/admin/launch-bharat/partnerships/{id}", s.auth(s.roles(http.HandlerFunc(s.launchPartnershipUpdate), "owner", "event_manager")))
+	mux.Handle("POST /api/v1/admin/launch-bharat/partnerships/{id}/documents", s.auth(s.roles(http.HandlerFunc(s.launchPartnershipUpload), "owner", "event_manager")))
+	mux.Handle("PUT /api/v1/admin/launch-bharat/inquiries/{id}", s.auth(s.roles(http.HandlerFunc(s.launchInquiryUpdate), "owner", "event_manager")))
+	mux.Handle("POST /api/v1/admin/launch-bharat/experts", s.auth(s.roles(http.HandlerFunc(s.launchExpertCreate), "owner", "event_manager")))
+	mux.Handle("PUT /api/v1/admin/launch-bharat/experts/{id}", s.auth(s.roles(http.HandlerFunc(s.launchExpertUpdate), "owner", "event_manager")))
+	mux.Handle("POST /api/v1/admin/launch-bharat/expert-assignments", s.auth(s.roles(http.HandlerFunc(s.launchExpertAssignmentCreate), "owner", "event_manager")))
+	mux.Handle("POST /api/v1/admin/launch-bharat/sessions", s.auth(s.roles(http.HandlerFunc(s.launchSessionCreate), "owner", "event_manager")))
+	mux.Handle("PUT /api/v1/admin/launch-bharat/sessions/{id}", s.auth(s.roles(http.HandlerFunc(s.launchSessionUpdate), "owner", "event_manager")))
+	mux.Handle("POST /api/v1/admin/launch-bharat/pitch-slots", s.auth(s.roles(http.HandlerFunc(s.launchPitchSlotCreate), "owner", "event_manager")))
+	mux.Handle("PUT /api/v1/admin/launch-bharat/pitch-slots/{id}", s.auth(s.roles(http.HandlerFunc(s.launchPitchSlotUpdate), "owner", "event_manager")))
+	mux.Handle("POST /api/v1/admin/launch-bharat/referrals", s.auth(s.roles(http.HandlerFunc(s.launchReferralCreate), "owner", "event_manager")))
+	mux.Handle("PUT /api/v1/admin/launch-bharat/referrals/{id}", s.auth(s.roles(http.HandlerFunc(s.launchReferralUpdate), "owner", "event_manager")))
+	mux.Handle("POST /api/v1/admin/launch-bharat/milestones", s.auth(s.roles(http.HandlerFunc(s.launchMilestoneCreate), "owner", "event_manager")))
+	mux.Handle("PUT /api/v1/admin/launch-bharat/milestones/{id}", s.auth(s.roles(http.HandlerFunc(s.launchMilestoneUpdate), "owner", "event_manager")))
+	mux.Handle("GET /api/v1/admin/launch-bharat/report", s.auth(s.roles(http.HandlerFunc(s.launchReport), "owner", "event_manager")))
+	mux.Handle("GET /api/v1/admin/launch-bharat/report.csv", s.auth(s.roles(http.HandlerFunc(s.launchReportCSV), "owner", "event_manager")))
+	mux.Handle("GET /api/v1/admin/organization/members", s.auth(s.roles(http.HandlerFunc(s.organizationMembers), "owner")))
+	mux.Handle("POST /api/v1/admin/organization/members", s.auth(s.roles(http.HandlerFunc(s.organizationMemberCreate), "owner")))
+	mux.Handle("PUT /api/v1/admin/organization/members/{id}", s.auth(s.roles(http.HandlerFunc(s.organizationMemberUpdate), "owner")))
+	mux.Handle("GET /api/v1/admin/platform/organizations", s.auth(s.platformRoles(http.HandlerFunc(s.platformOrganizations), "super_admin")))
+	mux.Handle("POST /api/v1/admin/platform/organizations", s.auth(s.platformRoles(http.HandlerFunc(s.platformOrganizationCreate), "super_admin")))
+	mux.Handle("PUT /api/v1/admin/platform/organizations/{id}", s.auth(s.platformRoles(http.HandlerFunc(s.platformOrganizationUpdate), "super_admin")))
+	mux.Handle("POST /api/v1/admin/security/mfa/setup", s.auth(http.HandlerFunc(s.mfaSetup)))
+	mux.Handle("POST /api/v1/admin/security/mfa/enable", s.auth(http.HandlerFunc(s.mfaEnable)))
+	mux.Handle("DELETE /api/v1/admin/security/mfa", s.auth(http.HandlerFunc(s.mfaDisable)))
 	return s.middleware(mux)
 }
 
 func (s *Server) middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", s.allowedOrigin)
-		w.Header().Set("Vary", "Origin")
-		w.Header().Set("Access-Control-Allow-Headers", "Authorization, Content-Type")
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS")
+		origin := r.Header.Get("Origin")
+		if origin != "" && origin != s.allowedOrigin {
+			fail(w, http.StatusForbidden, "origin is not allowed")
+			return
+		}
+		if origin == s.allowedOrigin {
+			w.Header().Set("Access-Control-Allow-Origin", s.allowedOrigin)
+			w.Header().Set("Access-Control-Allow-Credentials", "true")
+		}
+		w.Header().Add("Vary", "Origin")
+		w.Header().Set("Access-Control-Allow-Headers", "Authorization, Content-Type, X-CSRF-Token")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 		if r.Method == http.MethodOptions {
 			w.WriteHeader(http.StatusNoContent)
 			return
 		}
 		w.Header().Set("X-Content-Type-Options", "nosniff")
+		w.Header().Set("X-Frame-Options", "DENY")
+		w.Header().Set("Referrer-Policy", "strict-origin-when-cross-origin")
+		w.Header().Set("Permissions-Policy", "camera=(self), geolocation=(), microphone=()")
+		w.Header().Set("Content-Security-Policy", "default-src 'none'; frame-ancestors 'none'")
+		if strings.HasPrefix(s.webURL, "https://") {
+			w.Header().Set("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
+		}
+		if strings.HasPrefix(r.URL.Path, "/api/v1/admin/") {
+			w.Header().Set("Cache-Control", "no-store")
+		}
 		start := time.Now()
 		next.ServeHTTP(w, r)
 		s.logger.Info("request", "method", r.Method, "path", r.URL.Path, "duration", time.Since(start))
 	})
+}
+
+func clientIP(r *http.Request) string {
+	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	if err == nil {
+		return host
+	}
+	return r.RemoteAddr
+}
+
+func (s *Server) allowRequest(key string, maximum int, window time.Duration) bool {
+	now := time.Now()
+	s.limitMu.Lock()
+	defer s.limitMu.Unlock()
+	current := s.limits[key]
+	if current.resetAt.IsZero() || now.After(current.resetAt) {
+		current = requestLimit{resetAt: now.Add(window)}
+	}
+	if current.count >= maximum {
+		return false
+	}
+	current.count++
+	s.limits[key] = current
+	return true
 }
 
 func writeJSON(w http.ResponseWriter, status int, v any) {
@@ -297,6 +399,17 @@ func randomToken(bytes int) (string, error) {
 	}
 	return base64.RawURLEncoding.EncodeToString(b), nil
 }
+
+func randomReference(prefix string, byteCount, length int) (string, error) {
+	raw, err := randomToken(byteCount)
+	if err != nil {
+		return "", err
+	}
+	if len(raw) < length {
+		return "", errors.New("generated reference is shorter than requested")
+	}
+	return prefix + strings.ToUpper(raw[:length]), nil
+}
 func (s *Server) register(w http.ResponseWriter, r *http.Request) {
 	var in struct {
 		FullName    string `json:"fullName"`
@@ -346,9 +459,16 @@ func (s *Server) register(w http.ResponseWriter, r *http.Request) {
 		fail(w, 409, "registration deadline has passed")
 		return
 	}
-	token, _ := randomToken(24)
-	publicRaw, _ := randomToken(6)
-	publicID := "EW-" + strings.ToUpper(strings.ReplaceAll(publicRaw, "-", ""))[:8]
+	token, err := randomToken(24)
+	if err != nil {
+		fail(w, 500, "could not secure registration")
+		return
+	}
+	publicID, err := randomReference("EW-", 6, 8)
+	if err != nil {
+		fail(w, 500, "could not secure registration")
+		return
+	}
 	res, err := tx.ExecContext(r.Context(), `INSERT INTO registrations(public_id,event_id,full_name,email,phone,college_name,course,year_of_study,pass_token) VALUES(?,?,?,?,?,?,?,?,?)`, publicID, eventID, in.FullName, in.Email, strings.TrimSpace(in.Phone), strings.TrimSpace(in.CollegeName), strings.TrimSpace(in.Course), strings.TrimSpace(in.YearOfStudy), token)
 	if err != nil {
 		if strings.Contains(err.Error(), "UNIQUE constraint failed") {
@@ -400,9 +520,14 @@ func hashToken(token string) string {
 	return hex.EncodeToString(sum[:])
 }
 func (s *Server) login(w http.ResponseWriter, r *http.Request) {
+	if !s.allowRequest("login:"+clientIP(r), 8, 15*time.Minute) {
+		fail(w, http.StatusTooManyRequests, "too many sign-in attempts; try again later")
+		return
+	}
 	var in struct {
 		Email    string `json:"email"`
 		Password string `json:"password"`
+		OTP      string `json:"otp"`
 	}
 	if decode(r, &in) != nil {
 		fail(w, 400, "invalid login details")
@@ -415,22 +540,47 @@ func (s *Server) login(w http.ResponseWriter, r *http.Request) {
 		fail(w, 401, "incorrect email or password")
 		return
 	}
-	token, _ := randomToken(32)
+	var encryptedSecret string
+	var mfaEnabled int
+	err = s.store.DB.QueryRowContext(r.Context(), "SELECT secret_encrypted,enabled FROM admin_mfa WHERE admin_id=?", id).Scan(&encryptedSecret, &mfaEnabled)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		fail(w, 500, "could not verify sign-in")
+		return
+	}
+	if mfaEnabled == 1 {
+		secret, decryptErr := s.decryptSecret(encryptedSecret)
+		if decryptErr != nil || !validTOTP(secret, strings.TrimSpace(in.OTP), time.Now()) {
+			fail(w, 401, "a valid authenticator code is required")
+			return
+		}
+	}
+	token, err := randomToken(32)
+	if err != nil {
+		fail(w, 500, "could not create session")
+		return
+	}
 	expires := time.Now().Add(24 * time.Hour).UTC().Format(time.RFC3339)
+	_, _ = s.store.DB.ExecContext(r.Context(), "DELETE FROM sessions WHERE expires_at<=?", store.Now())
 	if _, err = s.store.DB.ExecContext(r.Context(), "INSERT INTO sessions(admin_id,token_hash,expires_at) VALUES(?,?,?)", id, hashToken(token), expires); err != nil {
 		fail(w, 500, "could not create session")
 		return
 	}
-	writeJSON(w, 200, map[string]any{"token": token, "expiresAt": expires, "admin": map[string]any{"id": id, "name": name, "email": email, "role": role}})
+	http.SetCookie(w, &http.Cookie{Name: "eventwallah_admin_session", Value: token, Path: "/", HttpOnly: true, Secure: strings.HasPrefix(s.webURL, "https://"), SameSite: http.SameSiteStrictMode, MaxAge: 86400})
+	writeJSON(w, 200, map[string]any{"expiresAt": expires, "admin": map[string]any{"id": id, "name": name, "email": email, "role": role}})
 }
 func (s *Server) auth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		h := r.Header.Get("Authorization")
-		if !strings.HasPrefix(h, "Bearer ") {
+		token := ""
+		if strings.HasPrefix(h, "Bearer ") {
+			token = strings.TrimSpace(strings.TrimPrefix(h, "Bearer "))
+		} else if cookie, err := r.Cookie("eventwallah_admin_session"); err == nil {
+			token = cookie.Value
+		}
+		if token == "" {
 			fail(w, 401, "authentication required")
 			return
 		}
-		token := strings.TrimSpace(strings.TrimPrefix(h, "Bearer "))
 		var id int64
 		var name, email, role string
 		err := s.store.DB.QueryRowContext(r.Context(), `SELECT a.id,a.name,a.email,a.role FROM sessions s JOIN admins a ON a.id=s.admin_id WHERE s.token_hash=? AND s.expires_at>?`, hashToken(token), store.Now()).Scan(&id, &name, &email, &role)
@@ -443,11 +593,18 @@ func (s *Server) auth(next http.Handler) http.Handler {
 	})
 }
 func (s *Server) me(w http.ResponseWriter, r *http.Request) {
-	writeJSON(w, 200, r.Context().Value(adminContextKey{}))
+	identity := r.Context().Value(adminContextKey{}).(map[string]any)
+	_, orgID, orgRole, err := s.adminScope(r)
+	if err != nil {
+		fail(w, 403, "organization access required")
+		return
+	}
+	writeJSON(w, 200, map[string]any{"id": identity["id"], "name": identity["name"], "email": identity["email"], "platformRole": identity["role"], "organizationId": orgID, "organizationRole": orgRole})
 }
 func (s *Server) logout(w http.ResponseWriter, r *http.Request) {
 	admin := r.Context().Value(adminContextKey{}).(map[string]any)
 	_, _ = s.store.DB.ExecContext(r.Context(), "DELETE FROM sessions WHERE token_hash=?", admin["tokenHash"])
+	http.SetCookie(w, &http.Cookie{Name: "eventwallah_admin_session", Value: "", Path: "/", HttpOnly: true, Secure: strings.HasPrefix(s.webURL, "https://"), SameSite: http.SameSiteStrictMode, MaxAge: -1})
 	w.WriteHeader(204)
 }
 func (s *Server) dashboard(w http.ResponseWriter, r *http.Request) {

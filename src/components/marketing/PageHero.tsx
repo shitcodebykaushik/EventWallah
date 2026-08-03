@@ -37,9 +37,9 @@ export function PageHero({
       )}
     >
       <div className="container-page">
-        <div className={cn("flex items-center justify-between border-b py-5 text-[10px] font-bold uppercase tracking-[0.2em]", dark ? "border-white/10 text-white/35" : "border-navy-900/12 text-navy-900/40")}>
-          <span>Launch Bharat · National campus network</span>
-          <span className="hidden sm:block">The Event Wallah</span>
+        <div className={cn("flex items-center justify-between border-b py-5 text-[10px] font-bold uppercase tracking-[0.2em]", dark ? "border-white/10 text-white/40" : "border-navy-900/12 text-navy-900/45")}>
+          <span>EventWallah · College event platform</span>
+          <span className="hidden sm:block">Operated by The Event Wallah</span>
         </div>
 
         <div className="grid lg:grid-cols-[1fr_280px]">
@@ -76,14 +76,14 @@ export function PageHero({
 
           <aside className="hidden py-20 pl-9 lg:flex lg:flex-col lg:justify-between">
             <p className={cn("text-[10px] font-bold uppercase tracking-[.2em]", dark ? "text-white/35" : "text-navy-900/35")}>
-              Campus to company
+              Public platform
             </p>
             <div>
               <p className={cn("font-heading text-6xl font-extrabold", dark ? "text-white/10" : "text-navy-900/10")}>
-                LB
+                EW
               </p>
               <p className={cn("mt-4 border-t pt-4 text-sm font-semibold leading-relaxed", dark ? "border-white/15 text-white/65" : "border-navy-900/15 text-navy-900/65")}>
-                A repeatable operating system for campus innovation.
+                Verified event information, registration and secure entry passes.
               </p>
             </div>
           </aside>

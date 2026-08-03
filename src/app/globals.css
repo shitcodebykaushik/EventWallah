@@ -581,3 +581,36 @@
     transform: none !important;
   }
 }
+
+/* Launch Bharat command workspace: denser than the public site, but still
+   carries the flagship programme's premium visual language. */
+.launch-admin section.rounded-md,
+.launch-admin form.rounded-md,
+.launch-admin article.rounded-md {
+  border-radius: 0.25rem;
+  box-shadow: 0 6px 20px rgba(7, 11, 22, 0.035);
+}
+
+.launch-admin section.rounded-md,
+.launch-admin form.rounded-md {
+  border-color: rgba(16, 24, 43, 0.09);
+}
+
+.launch-admin article.rounded-md {
+  transition: transform var(--duration-micro) var(--ease-water), box-shadow var(--duration-smooth) var(--ease-water), border-color var(--duration-micro) ease;
+}
+
+.launch-admin article.rounded-md:hover {
+  transform: none;
+  border-color: rgba(16, 24, 43, 0.2);
+  box-shadow: var(--shadow-soft);
+}
+
+.launch-admin .admin-input {
+  border-radius: 0.25rem;
+  background-color: #fff;
+}
+
+.launch-admin textarea {
+  border-radius: 0.25rem;
+}

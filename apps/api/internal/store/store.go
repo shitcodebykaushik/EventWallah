@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	_ "embed"
 	"fmt"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -14,7 +15,10 @@ import (
 //go:embed schema.sql
 var schema string
 
-type Store struct{ DB *sql.DB }
+type Store struct {
+	DB      *sql.DB
+	DataDir string
+}
 
 func Open(path string) (*Store, error) {
 	db, err := sql.Open("sqlite", path)
@@ -26,7 +30,7 @@ func Open(path string) (*Store, error) {
 		db.Close()
 		return nil, fmt.Errorf("migrate database: %w", err)
 	}
-	return &Store{DB: db}, nil
+	return &Store{DB: db, DataDir: filepath.Dir(path)}, nil
 }
 
 func (s *Store) Close() error { return s.DB.Close() }
@@ -95,6 +99,23 @@ func (s *Store) Seed(ctx context.Context, passwordHash string) error {
 	}
 	if _, err = s.DB.ExecContext(ctx, `INSERT INTO sponsorship_packages(event_id,name,price_paise,description,inventory,status) SELECT e.id,'Title Partner',5000000,'Primary brand placement, stage mentions and digital visibility',1,'active' FROM events e WHERE NOT EXISTS(SELECT 1 FROM sponsorship_packages p WHERE p.event_id=e.id)`); err != nil {
 		return err
+	}
+	if _, err = s.DB.ExecContext(ctx, `INSERT INTO launch_programs(organization_id,slug,name,edition,tagline,summary,vision,applications_open_at,applications_close_at,status)
+		SELECT o.id,'launch-bharat','Launch Bharat','2026–27','Launch your dream. Build the future.','EventWallah''s flagship national student-startup programme connecting campuses, founders, mentors and investors.','Build a credible national launchpad where student teams move from a campus problem to a validated venture with measurable institutional outcomes.','2026-08-01T00:00:00+05:30','2027-03-31T23:59:59+05:30','published'
+		FROM organizations o WHERE o.slug='eventwallah' ON CONFLICT(slug) DO NOTHING`); err != nil {
+		return err
+	}
+	if _, err = s.DB.ExecContext(ctx, `INSERT INTO launch_program_settings(program_id) SELECT id FROM launch_programs WHERE slug='launch-bharat' ON CONFLICT(program_id) DO NOTHING`); err != nil {
+		return err
+	}
+	legal := []struct{ slug, title, version, body string }{
+		{"launch-bharat-participation-terms", "Launch Bharat Participation Terms", "2026.1", "Applicants must provide accurate information, obtain consent from every team member, comply with programme rules and respect intellectual-property rights. Submission does not guarantee selection, funding, prizes or incubation. Teams retain ownership of their original work while granting The Event Wallah permission to review submitted materials for programme delivery."},
+		{"launch-bharat-privacy-notice", "Launch Bharat Applicant Privacy Notice", "2026.1", "Applicant information is collected for eligibility review, programme operations, authorized contact, evaluation and outcome reporting. Access is limited to authorized programme personnel and assigned reviewers. Data is retained only for the approved programme and legal retention period, subject to applicable rights and verified deletion requests."},
+	}
+	for _, item := range legal {
+		if _, err = s.DB.ExecContext(ctx, `INSERT INTO legal_documents(slug,title,version,body,status,effective_at) VALUES(?,?,?,?, 'published',?) ON CONFLICT(slug,version) DO NOTHING`, item.slug, item.title, item.version, item.body, Now()); err != nil {
+			return err
+		}
 	}
 	return nil
 }

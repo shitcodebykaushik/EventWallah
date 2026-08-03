@@ -1,12 +1,21 @@
 # EventWallah — Product Vision and Delivery Blueprint
 
-Last updated: 2 August 2026
+Last updated: 4 August 2026
 
 This document is the source of truth for EventWallah. Read it before making product, design, architecture, or business-logic changes. It explains what we are building, why it exists, how it should work, what is already implemented, and what remains.
 
 ## 1. Product in one sentence
 
-EventWallah is an India-focused college event discovery, ticketing, sponsorship, and operations platform where students find events at colleges and universities, register for event-specific passes, receive a secure QR code, and event teams manage the complete operation through a professional ERP-style admin system.
+EventWallah is The Event Wallah's India-focused college event discovery and operations platform. Its top-priority flagship programme is Launch Bharat, a national student-startup pathway operated end-to-end by The Event Wallah. The same platform continues to support independent college events with discovery, ticketing, secure QR passes and professional ERP operations.
+
+### Product hierarchy — canonical
+
+1. **The Event Wallah** is the parent operator responsible for professional programme and event delivery.
+2. **EventWallah** is the shared public marketplace and secure operations platform.
+3. **Launch Bharat** is the top-priority national flagship programme operated through EventWallah.
+4. **Regular college events** remain a permanent platform line and retain independent listings, tickets, registrations and operations.
+
+Launch Bharat is not a separate company and must never be presented as an ordinary event listing. It receives dedicated college-cohort, startup-team, problem-statement, evaluation, pitch-stage and incubation workflows while sharing the trusted EventWallah institution, identity and operations foundation.
 
 ## 2. The problem we are solving
 
@@ -208,8 +217,34 @@ Important source locations:
 
 ## 12. What is implemented now
 
+### Progress snapshot — 4 August 2026
+
+Current delivery focus: make the Launch Bharat pilot operationally usable end to end, while preserving the regular-event marketplace and ERP foundation. Core records and APIs now exist; the next work should complete operator-facing workflows, pilot data, communications and deployment readiness instead of adding more isolated schema.
+
+| Workstream | Current status | Next delivery target |
+| --- | --- | --- |
+| Launch Bharat public programme and applications | Implemented: flagship page, live problems, versioned consent, 2–5-member team applications and applicant credentials | Validate content and consent with the founder, load the first real programme and run a mobile application usability pass |
+| Applicant portal | Implemented foundation: protected sign-in, team status, secure document uploads, pitch schedule, referrals, milestones, password change and withdrawal | Add transactional notifications, recovery, richer validation and pilot support tooling |
+| Launch Bharat programme operations | Backend foundation implemented for partnerships, eligibility, experts, assignments, sessions, pitch slots, referrals, milestones and CSV reporting; command workspace covers the core programme pipeline | Complete detailed admin screens for every operations record, scheduling conflict handling, invitations and evidence review |
+| Platform administration and security | Implemented foundation: organization membership, platform organization controls, roles, HttpOnly sessions, optional authenticator MFA, origin enforcement, throttling, security headers and audit records | Complete invitation/recovery flows, organization switching, role-aware navigation and an internal moderation/risk console |
+| Regular-event marketplace and ERP | Implemented foundation: discovery, free checkout, tickets, coupons, passes, check-in, sponsorship and finance | Improve attendee operations, exports, cancellation/resend tools, sponsor packages and post-event reporting |
+| Local development runtime | Implemented: one command starts Next.js and Go, Go uses a writable build cache, and browser API traffic is same-origin through a Next.js rewrite | Add automated runtime smoke checks and document production reverse-proxy/deployment configuration |
+| Paid ticketing and communications | Deliberately not enabled | Resolve provider, merchant-of-record, fee, refund and messaging decisions before implementation |
+
+### Immediate next priorities
+
+1. Complete and browser-test the detailed Launch Bharat admin operations UI against every existing backend workflow.
+2. Prepare the first pilot dataset: programme dates, legal/consent copy, participating colleges, problem statements, evaluation rubric, operators and stage gates.
+3. Add email-first transactional communication for applications, status changes, schedules and secure account recovery.
+4. Finish organizer invitations, password recovery, role-aware navigation and platform moderation needed for safe pilot access.
+5. Run mobile, accessibility, authorization, cross-tenant and backup/restore acceptance checks; then define and automate the deployment runbook.
+6. Keep paid checkout closed until the founder resolves the payment, fee, refund, tax and merchant-of-record decisions in section 17.
+
 ### Public experience
 
+- Dedicated `/launch-bharat` national flagship experience
+- Secure Launch Bharat applications for teams of 2–5 students with exactly one lead
+- Live problem-statement selection and open-innovation applications
 - College and university discovery
 - Institution pages and published event listings
 - Event discovery and detail pages
@@ -221,6 +256,11 @@ Important source locations:
 
 ### Admin ERP
 
+- Launch Bharat programme command workspace
+- Institution cohort onboarding and phase tracking
+- Problem-statement creation and publication state
+- Founder-team pipeline from application through launch
+- Four-axis, round-specific evaluations with accountable audit records
 - Separate `/admin/login` entry point with no public admin promotion
 - Corporate ERP shell and command centre
 - Event creation, editing, attendee lists, and dashboard
@@ -232,6 +272,12 @@ Important source locations:
 
 ### Backend and data
 
+- Launch Bharat programmes, college partnerships, problems, teams, members and evaluations
+- Protected applicant accounts, versioned legal consent, secure programme documents and withdrawal history
+- Expert assignments, programme sessions, pitch slots, ecosystem referrals, founder milestones and CSV outcome reporting
+- Organization-scoped Launch Bharat administration and public-safe programme endpoints
+- HttpOnly session cookies, strict origin checks, security headers and request throttling
+- Same-origin browser API routing through the Next.js server, avoiding host-specific local CORS failures
 - Colleges, events, registrations, passes, admins, and sessions
 - Organizations, members, roles, and organization-event ownership
 - Ticket types, coupons, orders, and order items
@@ -247,7 +293,8 @@ Important source locations:
 
 These items are deliberately not considered finished:
 
-- Paid gateway: paid orders can exist in a pending state, but checkout is disabled until a provider is chosen and signed webhook verification is implemented.
+- Paid gateway: paid tickets may be configured for planning, but both the UI and API fail closed without creating an order until a provider and signed webhook verification are implemented.
+- Launch Bharat advanced operations: the backend supports experts, assignments, sessions, secure documents, pitch slots, referrals, milestones and CSV reports, but complete operator screens, automated invitations, scheduling conflict controls, investor data rooms, certificate generation and alumni networking remain to be implemented.
 - Student accounts: passes currently work without a complete attendee account and login system.
 - Notifications: transactional email, SMS, and WhatsApp delivery are not connected.
 - Refunds and settlements: refund approval, gateway refunds, organizer payouts, invoices, and reconciliation are not implemented.
@@ -263,9 +310,11 @@ These items are deliberately not considered finished:
 
 ### Phase 1 — trustworthy free-event platform
 
+- Complete Launch Bharat operator screens and run the first programme through a staged pilot
+- Load approved programme, college, problem, rubric, consent and operator data
+- Add applicant/organizer invitations, recovery and transactional email
 - Import and verify the institution directory
 - Complete organizer onboarding and team-role management
-- Add transactional email for registration and pass delivery
 - Improve attendee search, export, cancellation, and resend-pass tools
 - Add platform moderation and institution verification
 - Harden security, backups, logs, rate limiting, and deployment

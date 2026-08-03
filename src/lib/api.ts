@@ -1,5 +1,5 @@
 export const API_URL =
-  process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ?? "http://localhost:8080";
+  process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ?? "";
 
 export type College = {
   id: number;
@@ -187,6 +187,60 @@ export type AuditLog = {
   actorName: string;
 };
 
+export type LaunchProgram = {
+  id: number;
+  slug: string;
+  name: string;
+  edition: string;
+  tagline: string;
+  summary: string;
+  vision: string;
+  applicationsOpenAt: string;
+  applicationsCloseAt: string;
+  status: "draft" | "published" | "paused" | "completed" | "archived";
+};
+
+export type LaunchProblem = {
+  id: number;
+  title: string;
+  brief: string;
+  category: string;
+  sponsorName: string;
+  status: "draft" | "open" | "closed" | "archived";
+};
+
+export type LaunchTeam = {
+  id: number;
+  publicId: string;
+  collegeId: number;
+  collegeName: string;
+  problemStatementId: number | null;
+  problemTitle: string;
+  teamName: string;
+  ventureName: string;
+  summary: string;
+  pitchDeckUrl: string;
+  prototypeUrl: string;
+  leadEmail: string;
+  stage: "applied" | "eligible" | "shortlisted" | "finalist" | "incubating" | "launched" | "rejected" | "withdrawn";
+  memberCount: number;
+  averageScore: number;
+  createdAt: string;
+};
+
+export type LaunchPartnership = {
+  id: number;
+  publicId: string;
+  collegeId: number;
+  collegeName: string;
+  status: string;
+  phase: string;
+  leadName: string;
+  leadEmail: string;
+  mouSignedAt: string | null;
+  notes: string;
+};
+
 export function formatMoney(paise: number) {
   return new Intl.NumberFormat("en-IN", {
     style: "currency",
@@ -204,12 +258,12 @@ export class ApiError extends Error {
 export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   let response: Response;
   try {
+    const headers = new Headers(init?.headers);
+    if (!(init?.body instanceof FormData) && !headers.has("Content-Type")) headers.set("Content-Type", "application/json");
     response = await fetch(`${API_URL}${path}`, {
       ...init,
-      headers: {
-        "Content-Type": "application/json",
-        ...init?.headers,
-      },
+      credentials: "include",
+      headers,
     });
   } catch {
     throw new ApiError(
@@ -226,9 +280,7 @@ export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> 
 }
 
 export function authHeaders(): HeadersInit {
-  if (typeof window === "undefined") return {};
-  const token = window.localStorage.getItem("eventwallah_admin_token");
-  return token ? { Authorization: `Bearer ${token}` } : {};
+  return {};
 }
 
 export function formatEventDate(value: string, includeYear = false) {

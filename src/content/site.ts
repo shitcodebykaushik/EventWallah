@@ -28,6 +28,7 @@ export const site = {
 
 /** Primary desktop links — keep short for a clean bar */
 export const navigationPrimary = [
+	{ href: "/launch-bharat", label: "Launch Bharat" },
   { href: "/events", label: "Events" },
   { href: "/colleges", label: "Colleges" },
   { href: "/for-students", label: "For students" },

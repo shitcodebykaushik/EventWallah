@@ -1,6 +1,6 @@
 # EventWallah
 
-EventWallah is a multi-organization college-event discovery and operations platform for India. Students find their institution, choose an event-specific ticket, complete registration, and receive a unique QR code. Event teams run publishing, ticketing, sponsorship, finance, and venue operations from a protected ERP console.
+EventWallah is a multi-organization college-event discovery and operations platform for India, operated by The Event Wallah. Its top-priority flagship programme is **Launch Bharat**, a national student-startup pathway for college cohorts, problem statements, founder teams, evaluated pitch stages and incubation follow-through. Regular college events continue to use EventWallah for discovery, registration, QR passes and ERP operations.
 
 The complete product goal, business rules, current scope, and delivery roadmap are maintained in [`docs/PROJECT_VISION.md`](docs/PROJECT_VISION.md). Read that document before beginning substantial product work.
 
@@ -24,13 +24,17 @@ The Next.js application remains at the repository root to preserve the existing 
 ## Included workflows
 
 - Search and filter colleges and universities
+- Public Launch Bharat flagship experience, versioned consent and secure student team applications
+- Applicant portal with protected documents, status, pitch schedule, referrals and milestones
+- Launch Bharat college lifecycle, eligibility review, expert roster, live programme operations and outcome reporting
+- Organization access controls, platform tenancy controls and authenticator-based administrator MFA
 - Institution pages with published event listings
 - Event discovery and detail pages
 - Event-specific ticket types with independent prices, inventory and sales windows
 - Free checkout with capacity, deadline, coupon and duplicate checks
 - Random, unguessable pass tokens and server-generated QR images
 - Public pass page with current check-in status
-- Password-protected admin sessions
+- Password-protected, HttpOnly-cookie admin sessions with origin enforcement and rate limiting
 - Admin dashboard, event creation/editing, and attendee lists
 - Organization tenancy and role-based controls for event, ticketing, sponsorship, finance and check-in teams
 - Ticket inventory, order ledger and event-scoped coupon management
@@ -69,7 +73,12 @@ Requirements: Node.js 20+, npm, and Go 1.26+.
 
 4. Open `http://localhost:3000`. The API listens on `http://localhost:8080`.
 
-The development admin account is `admin@eventwallah.local`. Its password is the value of `EVENTWALLAH_ADMIN_PASSWORD`; when the variable is absent, the local-only default is `change-me-now`. Always set a strong password outside local development.
+   Browser API requests use the website's same-origin `/api/v1/*` path and are
+   forwarded to the Go service by Next.js. Set the server-side
+   `EVENTWALLAH_API_URL` only when the API is not available at
+   `http://localhost:8080`; do not expose the local API address to browser code.
+
+The development admin account is `admin@eventwallah.local`. Its password is the value of `EVENTWALLAH_ADMIN_PASSWORD`; when the variable is absent, the local-only default is `change-me-now`. Set `EVENTWALLAH_SECURITY_KEY` to a long random secret to encrypt MFA seeds. HTTPS deployments refuse to start with either development default.
 
 ## Institution import
 
@@ -90,7 +99,7 @@ npm run build
 npm run test:api
 ```
 
-The API test suite covers registration, ticket checkout, duplicate prevention, pass retrieval, QR generation, authentication, one-time check-in, coupons, sponsorship deals and deliverables, expenses, finance, audit records, and protected admin routes.
+The API test suite covers Launch Bharat programme discovery, team applications, duplicate prevention, founder-stage changes and scored evaluations alongside regular-event ticket checkout, pass retrieval, QR generation, authentication, one-time check-in, coupons, sponsorship, finance, audit records, and protected admin routes.
 
 ## Production notes
 
@@ -99,6 +108,6 @@ The API test suite covers registration, ticket checkout, duplicate prevention, p
 - Back up the SQLite database and WAL files together using a SQLite-aware backup procedure.
 - Keep the API behind a reverse proxy with request throttling and access logs.
 - Use a verified AISHE/UGC data export for the national institution import.
-- Paid ticket orders use explicit pending payment states. Connect a payment provider with signed webhook verification before enabling the paid checkout button; never confirm a paid order from a browser redirect alone.
+- Paid checkout fails closed and does not create an order until a verified payment provider is connected. Use signed webhook verification and never confirm a paid order from a browser redirect alone.
 - SQLite is appropriate for the current single-service deployment. Keep one application writer, monitor lock contention, and plan a managed PostgreSQL migration before high-volume multi-region operation.
 - Put secrets in a managed secret store, apply rate limiting at the edge, and ship structured logs and database backups to monitored infrastructure.

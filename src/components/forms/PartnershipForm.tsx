@@ -27,6 +27,7 @@ import {
   type PartnershipLead,
 } from "@/lib/validations/partnership";
 import { cn } from "@/lib/utils";
+import { apiFetch } from "@/lib/api";
 
 export function PartnershipForm() {
   const [submitted, setSubmitted] = useState(false);
@@ -50,8 +51,7 @@ export function PartnershipForm() {
   const collegeType = useWatch({ control, name: "collegeType" });
 
   async function onSubmit(data: PartnershipLead) {
-    await new Promise((r) => setTimeout(r, 900));
-    console.info("[PartnershipLead]", data);
+    await apiFetch("/api/v1/launch-bharat/partnership-inquiries", { method: "POST", body: JSON.stringify({ institutionName:data.institutionName, institutionType:data.collegeType || "other", cityState:data.cityState, contactName:data.fullName, contactEmail:data.email, contactPhone:data.phone, contactRole:data.role, interest:data.interest, message:data.message || "", consent:data.consent }) });
     setSubmitted(true);
   }
 
@@ -62,12 +62,10 @@ export function PartnershipForm() {
           <CheckCircle2 className="size-8" />
         </div>
         <h3 className="relative mt-5 text-2xl font-bold text-ink">
-          Details checked
+          Inquiry received
         </h3>
         <p className="relative mx-auto mt-3 max-w-md text-sm leading-relaxed text-zinc-500">
-          The form is currently running in pilot mode and has not transmitted
-          your details. Please email the partnerships desk to begin the
-          2026–27 planning conversation.
+          Your inquiry has been securely recorded for the Launch Bharat partnerships team. We will use the official contact details provided to follow up.
         </p>
         <motion.button
           type="button"
@@ -274,13 +272,12 @@ export function PartnershipForm() {
         ) : (
           <>
             <Send className="size-4" />
-            Check inquiry details
+            Submit partnership inquiry
           </>
         )}
       </motion.button>
       <p className="text-xs text-slate-500">
-        This pilot form currently validates details in your browser and does not
-        transmit them. You can also email the partnerships desk directly.
+        Your details are used only to review and respond to this institutional inquiry.
       </p>
     </form>
   );

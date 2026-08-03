@@ -17,11 +17,10 @@ export function AdminLogin() {
     setError("");
     const form = new FormData(event.currentTarget);
     try {
-      const data = await apiFetch<{ token: string }>("/api/v1/admin/login", {
+	  await apiFetch<{ expiresAt: string }>("/api/v1/admin/login", {
         method: "POST",
         body: JSON.stringify(Object.fromEntries(form.entries())),
       });
-      localStorage.setItem("eventwallah_admin_token", data.token);
       router.replace("/admin");
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Could not sign in");
@@ -35,6 +34,7 @@ export function AdminLogin() {
       <form onSubmit={submit} className="mt-9 rounded-md border border-white/10 bg-white/[.055] p-6 backdrop-blur sm:p-8">
         <label className="block"><span className="text-xs font-bold text-white/60">Email address</span><input required name="email" type="email" defaultValue="admin@eventwallah.local" className="mt-2 h-12 w-full rounded-sm border border-white/12 bg-white/8 px-4 text-sm text-white outline-none focus:border-brand-orange"/></label>
         <label className="mt-5 block"><span className="text-xs font-bold text-white/60">Password</span><input required name="password" type="password" placeholder="Admin password" className="mt-2 h-12 w-full rounded-sm border border-white/12 bg-white/8 px-4 text-sm text-white outline-none focus:border-brand-orange"/></label>
+        <label className="mt-5 block"><span className="text-xs font-bold text-white/60">Authenticator code <span className="font-normal text-white/30">(if enabled)</span></span><input name="otp" inputMode="numeric" pattern="[0-9]{6}" maxLength={6} autoComplete="one-time-code" placeholder="6-digit code" className="mt-2 h-12 w-full rounded-sm border border-white/12 bg-white/8 px-4 text-sm tracking-[.25em] text-white outline-none focus:border-brand-orange"/></label>
         {error&&<p className="mt-4 rounded-sm bg-red-400/10 p-3 text-sm text-red-300">{error}</p>}
         <button disabled={loading} className="btn-accent mt-6 h-12 w-full">{loading?<><LoaderCircle className="size-4 animate-spin"/>Signing in…</>:<>Sign in securely <ArrowRight className="size-4"/></>}</button>
         <p className="mt-4 flex items-center justify-center gap-2 text-[10px] text-white/35"><LockKeyhole className="size-3"/>24-hour server-side session</p>

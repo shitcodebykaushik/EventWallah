@@ -15,25 +15,34 @@ import {
   Plus,
   QrCode,
   ReceiptText,
+  Rocket,
   ScrollText,
   ShieldCheck,
+  Settings,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BrandMark } from "@/components/marketing/BrandMark";
+import { API_URL, apiFetch, ApiError } from "@/lib/api";
 import { cn } from "@/lib/utils";
 
-const navigation = [
-  { href: "/admin", label: "Command centre", icon: LayoutDashboard },
-  { href: "/admin/events/new", label: "Create event", icon: Plus },
-  { href: "/admin/ticketing", label: "Ticketing & sales", icon: ReceiptText },
-  { href: "/admin/sponsors", label: "Sponsorship CRM", icon: Handshake },
-  { href: "/admin/finance", label: "Finance", icon: IndianRupee },
-  { href: "/admin/check-in", label: "Pass check-in", icon: QrCode },
-  { href: "/admin/audit", label: "Audit trail", icon: ScrollText },
+type OrganizationRole = "owner" | "event_manager" | "ticketing_manager" | "sponsorship_manager" | "finance_manager" | "checkin_operator" | "viewer";
+type AdminIdentity = { name: string; email: string; organizationRole: OrganizationRole };
+
+const navigation: Array<{ href: string; label: string; icon: typeof Rocket; roles: OrganizationRole[] }> = [
+  { href: "/admin/launch-bharat", label: "Launch Bharat", icon: Rocket, roles: ["owner", "event_manager"] },
+  { href: "/admin", label: "Command centre", icon: LayoutDashboard, roles: ["owner", "event_manager", "ticketing_manager", "sponsorship_manager", "finance_manager", "checkin_operator", "viewer"] },
+  { href: "/admin/events/new", label: "Create event", icon: Plus, roles: ["owner", "event_manager"] },
+  { href: "/admin/ticketing", label: "Ticketing & sales", icon: ReceiptText, roles: ["owner", "event_manager", "ticketing_manager", "finance_manager"] },
+  { href: "/admin/sponsors", label: "Sponsorship CRM", icon: Handshake, roles: ["owner", "sponsorship_manager", "finance_manager"] },
+  { href: "/admin/finance", label: "Finance", icon: IndianRupee, roles: ["owner", "finance_manager"] },
+  { href: "/admin/check-in", label: "Pass check-in", icon: QrCode, roles: ["owner", "event_manager", "checkin_operator"] },
+  { href: "/admin/audit", label: "Audit trail", icon: ScrollText, roles: ["owner"] },
+  { href: "/admin/settings", label: "Access & security", icon: Settings, roles: ["owner"] },
 ];
 
 function pageDetails(pathname: string) {
   if (pathname === "/admin") return { title: "Command centre", detail: "Platform operations and event performance" };
+  if (pathname === "/admin/launch-bharat") return { title: "Launch Bharat", detail: "National programme, college cohorts and founder pipeline" };
   if (pathname === "/admin/events/new") return { title: "Create event", detail: "Add a new listing to the campus calendar" };
   if (pathname.startsWith("/admin/events/")) return { title: "Event workspace", detail: "Listing details, capacity and attendees" };
   if (pathname === "/admin/check-in") return { title: "Pass check-in", detail: "Validate attendee access at the venue" };
@@ -41,6 +50,7 @@ function pageDetails(pathname: string) {
   if (pathname === "/admin/sponsors") return { title: "Sponsorship CRM", detail: "Brands, commercial deals and deliverables" };
   if (pathname === "/admin/finance") return { title: "Finance", detail: "Income, outstanding value, expenses and margin" };
   if (pathname === "/admin/audit") return { title: "Audit trail", detail: "Immutable history of operational changes" };
+  if (pathname === "/admin/settings") return { title: "Access & security", detail: "Team roles and account protection" };
   return { title: "EventWallah ERP", detail: "Administration workspace" };
 }
 
@@ -48,13 +58,24 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [identity, setIdentity] = useState<AdminIdentity | null>(null);
   const page = pageDetails(pathname);
   const today = new Intl.DateTimeFormat("en-IN", { day: "2-digit", month: "short", year: "numeric" }).format(new Date());
 
-  function logout() {
-    localStorage.removeItem("eventwallah_admin_token");
+  useEffect(() => {
+    apiFetch<AdminIdentity>("/api/v1/admin/me")
+      .then(setIdentity)
+      .catch((error) => {
+        if (error instanceof ApiError && (error.status === 401 || error.status === 403)) router.replace("/admin/login");
+      });
+  }, [router]);
+
+  async function logout() {
+    await fetch(`${API_URL}/api/v1/admin/logout`, { method: "POST", credentials: "include" }).catch(() => undefined);
     router.replace("/admin/login");
   }
+
+  const permittedNavigation = identity ? navigation.filter((item) => item.roles.includes(identity.organizationRole)) : [];
 
   const sidebar = <>
     <div className="flex h-[76px] items-center gap-3 border-b border-white/8 px-5">
@@ -64,7 +85,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     <div className="flex flex-1 flex-col overflow-y-auto px-3 py-6">
       <p className="px-3 text-[9px] font-bold tracking-[.18em] text-white/25 uppercase">Workspace</p>
       <nav className="mt-3 space-y-1">
-        {navigation.map((item) => {
+        {permittedNavigation.map((item) => {
           const Icon = item.icon;
           const active = item.href === "/admin" ? pathname === "/admin" : pathname.startsWith(item.href);
           return <Link key={item.href} href={item.href} onClick={() => setMobileOpen(false)} className={cn("group flex items-center gap-3 rounded-md px-3 py-3 text-[13px] font-semibold transition", active ? "bg-white text-navy-950 shadow-sm" : "text-white/48 hover:bg-white/7 hover:text-white")}><Icon className={cn("size-[18px]", active ? "text-brand-orange" : "text-white/35 group-hover:text-white/70")}/><span className="flex-1">{item.label}</span>{active&&<ChevronRight className="size-3.5 text-zinc-300"/>}</Link>;
@@ -77,7 +98,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       </div>
       <div className="mt-auto pt-8">
         <div className="rounded-md border border-white/8 bg-white/[.035] p-3">
-          <div className="flex items-center gap-3"><span className="flex size-9 items-center justify-center rounded-md bg-brand-orange text-xs font-extrabold text-white">EA</span><span className="min-w-0 flex-1"><span className="block truncate text-xs font-bold text-white">EventWallah Admin</span><span className="block text-[10px] text-white/35">Super administrator</span></span><ShieldCheck className="size-4 text-emerald-400"/></div>
+          <div className="flex items-center gap-3"><span className="flex size-9 items-center justify-center rounded-md bg-brand-orange text-xs font-extrabold text-white">{identity?.name.split(/\s+/).slice(0,2).map((part)=>part[0]).join("").toUpperCase() || "EW"}</span><span className="min-w-0 flex-1"><span className="block truncate text-xs font-bold text-white">{identity?.name || "Authenticated user"}</span><span className="block truncate text-[10px] text-white/35">{identity?.organizationRole.replaceAll("_", " ") || "Loading access…"}</span></span><ShieldCheck className="size-4 text-emerald-400"/></div>
           <button type="button" onClick={logout} className="mt-3 flex w-full items-center justify-center gap-2 border-t border-white/8 pt-3 text-[11px] font-bold text-white/40 transition hover:text-white"><LogOut className="size-3.5"/>Sign out</button>
         </div>
       </div>

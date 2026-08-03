@@ -262,7 +262,16 @@ func (s *Server) updateTicket(w http.ResponseWriter, r *http.Request) {
 		fail(w, 422, err.Error())
 		return
 	}
-	res, err := s.store.DB.ExecContext(r.Context(), `UPDATE ticket_types SET name=?,description=?,price_paise=?,capacity=?,min_per_order=?,max_per_order=?,sales_start=?,sales_end=?,benefits=?,status=?,updated_at=CURRENT_TIMESTAMP WHERE id=? AND capacity>=sold_quantity AND event_id IN (SELECT event_id FROM organization_events WHERE organization_id=?)`, in.Name, in.Description, in.PricePaise, in.Capacity, in.MinPerOrder, in.MaxPerOrder, in.SalesStart, in.SalesEnd, in.Benefits, in.Status, id, orgID)
+	var sold int
+	if err = s.store.DB.QueryRowContext(r.Context(), `SELECT sold_quantity FROM ticket_types WHERE id=? AND event_id IN (SELECT event_id FROM organization_events WHERE organization_id=?)`, id, orgID).Scan(&sold); err != nil {
+		fail(w, 404, "ticket type not found")
+		return
+	}
+	if in.Capacity < sold {
+		fail(w, 422, "capacity cannot be lower than sold inventory")
+		return
+	}
+	res, err := s.store.DB.ExecContext(r.Context(), `UPDATE ticket_types SET name=?,description=?,price_paise=?,capacity=?,min_per_order=?,max_per_order=?,sales_start=?,sales_end=?,benefits=?,status=?,updated_at=CURRENT_TIMESTAMP WHERE id=? AND event_id IN (SELECT event_id FROM organization_events WHERE organization_id=?)`, in.Name, in.Description, in.PricePaise, in.Capacity, in.MinPerOrder, in.MaxPerOrder, in.SalesStart, in.SalesEnd, in.Benefits, in.Status, id, orgID)
 	if err != nil {
 		fail(w, 422, "could not update ticket type")
 		return
@@ -277,8 +286,11 @@ func (s *Server) updateTicket(w http.ResponseWriter, r *http.Request) {
 }
 
 func orderRef() string {
-	raw, _ := randomToken(7)
-	return "EWO-" + strings.ToUpper(strings.ReplaceAll(raw, "-", ""))[:9]
+	ref, err := randomReference("EWO-", 7, 9)
+	if err != nil {
+		return ""
+	}
+	return ref
 }
 func (s *Server) createOrder(w http.ResponseWriter, r *http.Request) {
 	var in struct {
@@ -367,13 +379,17 @@ func (s *Server) createOrder(w http.ResponseWriter, r *http.Request) {
 		couponID = id
 	}
 	total := subtotal - discount
+	if total > 0 {
+		fail(w, http.StatusServiceUnavailable, "paid checkout is not available until verified payment processing is configured")
+		return
+	}
 	paymentStatus := "not_required"
 	orderStatus := "confirmed"
-	if total > 0 {
-		paymentStatus = "pending"
-		orderStatus = "pending"
-	}
 	ref := orderRef()
+	if ref == "" {
+		fail(w, 500, "could not secure order")
+		return
+	}
 	res, err := tx.ExecContext(r.Context(), `INSERT INTO orders(public_id,event_id,buyer_name,buyer_email,buyer_phone,subtotal_paise,discount_paise,total_paise,coupon_id,status,payment_status) VALUES(?,?,?,?,?,?,?,?,?,?,?)`, ref, eventID, in.FullName, in.Email, in.Phone, subtotal, discount, total, couponID, orderStatus, paymentStatus)
 	if err != nil {
 		fail(w, 500, "could not create order")
@@ -384,21 +400,20 @@ func (s *Server) createOrder(w http.ResponseWriter, r *http.Request) {
 		fail(w, 500, "could not create order items")
 		return
 	}
-	if total > 0 {
-		if err = tx.Commit(); err != nil {
-			fail(w, 500, "could not create order")
-			return
-		}
-		writeJSON(w, 201, map[string]any{"orderId": ref, "status": "pending", "paymentRequired": true, "amountPaise": total, "message": "Payment provider configuration is required to complete this order"})
-		return
-	}
 	if in.Quantity != 1 {
 		fail(w, 422, "free student passes currently require one attendee per order")
 		return
 	}
-	token, _ := randomToken(24)
-	publicRaw, _ := randomToken(6)
-	publicID := "EW-" + strings.ToUpper(strings.ReplaceAll(publicRaw, "-", ""))[:8]
+	token, err := randomToken(24)
+	if err != nil {
+		fail(w, 500, "could not secure pass")
+		return
+	}
+	publicID, err := randomReference("EW-", 6, 8)
+	if err != nil {
+		fail(w, 500, "could not secure pass")
+		return
+	}
 	regRes, err := tx.ExecContext(r.Context(), `INSERT INTO registrations(public_id,event_id,full_name,email,phone,college_name,course,year_of_study,pass_token) VALUES(?,?,?,?,?,?,?,?,?)`, publicID, eventID, in.FullName, in.Email, in.Phone, in.CollegeName, in.Course, in.YearOfStudy, token)
 	if err != nil {
 		if strings.Contains(err.Error(), "UNIQUE constraint failed") {
@@ -690,6 +705,11 @@ func (s *Server) updateDeal(w http.ResponseWriter, r *http.Request) {
 	}
 	if in.ContractedValuePaise < 0 || in.CashValuePaise < 0 || in.InKindValuePaise < 0 || in.ReceivedPaise < 0 || in.ReceivedPaise > in.CashValuePaise {
 		fail(w, 422, "deal values must be non-negative and received cash cannot exceed cash value")
+		return
+	}
+	var allowed int
+	if err = s.store.DB.QueryRowContext(r.Context(), `SELECT COUNT(*) FROM organization_events oe JOIN sponsors s ON s.organization_id=oe.organization_id WHERE oe.organization_id=? AND oe.event_id=? AND s.id=? AND (? IS NULL OR EXISTS(SELECT 1 FROM sponsorship_packages p WHERE p.id=? AND p.event_id=oe.event_id))`, orgID, in.EventID, in.SponsorID, in.PackageID, in.PackageID).Scan(&allowed); err != nil || allowed == 0 {
+		fail(w, 422, "event, sponsor and package must belong to your organization")
 		return
 	}
 	res, err := s.store.DB.ExecContext(r.Context(), `UPDATE sponsorship_deals SET event_id=?,sponsor_id=?,package_id=?,stage=?,contracted_value_paise=?,cash_value_paise=?,in_kind_value_paise=?,received_paise=?,owner_name=?,next_action=?,next_action_at=?,notes=?,updated_at=CURRENT_TIMESTAMP WHERE id=? AND organization_id=?`, in.EventID, in.SponsorID, in.PackageID, in.Stage, in.ContractedValuePaise, in.CashValuePaise, in.InKindValuePaise, in.ReceivedPaise, in.OwnerName, in.NextAction, in.NextActionAt, in.Notes, id, orgID)

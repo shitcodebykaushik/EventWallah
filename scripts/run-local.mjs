@@ -1,4 +1,6 @@
 import { spawn } from "node:child_process";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import process from "node:process";
 
 const production = process.argv.includes("--production");
@@ -38,5 +40,9 @@ process.on("SIGTERM", () => shutdown(0));
 
 start("go", ["run", "./cmd/server"], {
   cwd: new URL("../apps/api", import.meta.url),
+  env: {
+    ...process.env,
+    GOCACHE: process.env.GOCACHE || join(tmpdir(), "eventwallah-go-cache"),
+  },
 });
 start("npm", ["run", production ? "start:web" : "dev:web"]);

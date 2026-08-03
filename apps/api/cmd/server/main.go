@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
+	"strings"
 	"syscall"
 	"time"
 
@@ -37,6 +38,16 @@ func main() {
 	}
 	defer st.Close()
 	password := env("EVENTWALLAH_ADMIN_PASSWORD", "change-me-now")
+	webURL := env("EVENTWALLAH_WEB_URL", "http://localhost:3000")
+	securityKey := env("EVENTWALLAH_SECURITY_KEY", "eventwallah-development-security-key")
+	if password == "change-me-now" && strings.HasPrefix(webURL, "https://") {
+		logger.Error("refusing production startup with the development admin password")
+		os.Exit(1)
+	}
+	if securityKey == "eventwallah-development-security-key" && strings.HasPrefix(webURL, "https://") {
+		logger.Error("refusing production startup without EVENTWALLAH_SECURITY_KEY")
+		os.Exit(1)
+	}
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		logger.Error("hash seed password", "error", err)
@@ -47,7 +58,7 @@ func main() {
 		os.Exit(1)
 	}
 	addr := env("EVENTWALLAH_ADDR", ":8080")
-	handler := httpapi.New(st, env("EVENTWALLAH_WEB_URL", "http://localhost:3000"), env("EVENTWALLAH_CORS_ORIGIN", "http://localhost:3000"), logger)
+	handler := httpapi.New(st, webURL, env("EVENTWALLAH_CORS_ORIGIN", "http://localhost:3000"), logger, securityKey)
 	server := &http.Server{Addr: addr, Handler: handler, ReadHeaderTimeout: 5 * time.Second, ReadTimeout: 15 * time.Second, WriteTimeout: 30 * time.Second, IdleTimeout: 60 * time.Second}
 	go func() {
 		logger.Info("EventWallah API started", "address", addr)
